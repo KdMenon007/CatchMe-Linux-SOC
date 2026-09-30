@@ -1,16 +1,3 @@
-
-```text
-CatchMe-Linux-SOC/00-Linux-Baseline/
-```
-
-### Filename
-
-```text
-baseline-summary.md
-```
-
-### Copy everything below
-
 ````markdown
 # Linux Baseline Summary
 
@@ -19,8 +6,6 @@ baseline-summary.md
 This document provides a concise security baseline for the `soc-linux` Linux endpoint before controlled attack simulations begin.
 
 The baseline represents the known-good state used for comparison during future SOC investigations.
-
----
 
 ## Environment
 
@@ -34,64 +19,52 @@ The baseline represents the known-good state used for comparison during future S
 | Endpoint Agent | Elastic Agent |
 | Linux Auditing | Auditd |
 
----
-
 ## Baseline Scope
 
-The baseline covers the following security-relevant areas:
+The baseline covers:
 
-1. System information
-2. Network configuration
-3. Listening services
-4. Running services
-5. Enabled services
-6. Local users and groups
-7. Privilege and sudo configuration
-8. SSH configuration
-9. Cron and scheduled tasks
-10. Systemd persistence
-11. Auditd
-12. Elastic Agent
-13. Running processes
-14. Active network connections
+- System information
+- Network configuration
+- Listening services
+- Running services
+- Enabled services
+- Local users and groups
+- Privilege and sudo configuration
+- SSH configuration
+- Cron and scheduled tasks
+- Systemd persistence
+- Auditd
+- Elastic Agent
+- Running processes
+- Active network connections
 
----
-
-## Security Baseline Concept
-
-The endpoint is considered to be in a known-good state at the time of baseline collection.
-
-Future attack simulations will introduce controlled changes to this state.
-
-These changes will then be investigated through:
+## Baseline Workflow
 
 ```text
-Baseline
-   ↓
-Attack Activity
-   ↓
-Telemetry
-   ↓
+Known-Good Baseline
+        ↓
+Controlled Attack
+        ↓
+Linux Telemetry
+        ↓
 Threat Hunting
-   ↓
+        ↓
 Detection
-   ↓
+        ↓
 Investigation
-   ↓
+        ↓
 MITRE ATT&CK
-   ↓
+        ↓
 Incident Response
-   ↓
+        ↓
 Remediation
+        ↓
+Re-baseline
 ````
-
----
 
 ## Baseline Evidence
 
-The original baseline collection was performed directly on the Linux endpoint.
-
-Collected information includes:
+The baseline collection includes:
 
 * Host information
 * Operating system information
@@ -119,101 +92,52 @@ Collected information includes:
 * Fleet connectivity
 * Process information
 
----
-
-## Baseline Security Principle
+## Security Baseline Concept
 
 A baseline provides context for security monitoring.
 
-For example:
+Examples:
 
 ```text
-Known service
+Known Service
      ↓
-Unexpected service
+Unexpected Service
      ↓
-Investigate
+Investigation
 ```
 
 ```text
-Known listening port
+Known Listening Port
      ↓
-New listening port
+New Listening Port
      ↓
-Investigate
+Investigation
 ```
 
 ```text
-Known user
+Known User
      ↓
-Unexpected account activity
+Unexpected Account Activity
      ↓
-Investigate
+Investigation
 ```
 
 ```text
-Known persistence state
+Known Persistence State
      ↓
-New cron/systemd persistence
+New Cron/Systemd Persistence
      ↓
-Investigate
+Investigation
 ```
-
----
-
-## Future Comparison
-
-The baseline will be reused throughout the CatchMe Linux SOC project series.
-
-Each investigation will compare observed activity against the established normal state where applicable.
-
-Examples include:
-
-* New processes
-* New services
-* New network listeners
-* New users
-* Modified SSH configuration
-* New SSH keys
-* New cron jobs
-* New systemd units
-* Privilege changes
-* Suspicious execution
-* Unexpected network connections
-
----
 
 ## Baseline Status
 
-**Status:** Completed
+| Item                   | Status      |
+| ---------------------- | ----------- |
+| Baseline Collection    | Completed   |
+| Baseline Documentation | In Progress |
+| Attack Simulations     | Not Started |
+| Planned Investigations | 25          |
 
-**Purpose:** Known-good Linux security state
-
-**Next Stage:** Detailed baseline documentation
-
-**Attack Simulations:** Not yet started
-
-**Planned SOC Investigations:** 25
-
----
-
-## Security Notice
-
-This repository is intended as a cybersecurity portfolio and laboratory documentation project.
-
-Sensitive information must not be committed to the repository.
-
-Never publish:
-
-* Passwords
-* API keys
-* Enrollment tokens
-* Service tokens
-* Private keys
-* `/etc/shadow`
-* Sensitive authentication data
-* Confidential logs
-* Real customer information
-
-````
-
+```
+```
