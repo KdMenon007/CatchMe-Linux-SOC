@@ -59,6 +59,8 @@ Incident Response
 Remediation
         ↓
 Re-baseline
+```
+
 
 ## Baseline Evidence
 
@@ -241,12 +243,3 @@ Future investigations can compare observed activity against this baseline, inclu
 * Unexpected services
 * System modifications
 * Abnormal system load
-
-## Baseline Collection
-
-The information documented above was collected from the `soc-linux` endpoint during the initial CatchMe Linux SOC baseline process.
-
-Sensitive identifiers such as the Machine ID and Boot ID are intentionally excluded from the public portfolio documentation.
-
-```
-```
