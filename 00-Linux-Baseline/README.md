@@ -32,7 +32,7 @@ The baseline documents:
 
 ## 🏗️ Lab Architecture
 
-```text
+
                  ┌─────────────────────────┐
                  │     Elastic SIEM        │
                  │     192.168.1.11        │
@@ -55,7 +55,6 @@ The baseline documents:
                  │ Authentication Logs     │
                  │ Process / System Data   │
                  └─────────────────────────┘
-````
 
 ---
 
@@ -354,6 +353,4 @@ MITRE ATT&CK
 Incident Report
   ↓
 Remediation
-```
-
 ```
