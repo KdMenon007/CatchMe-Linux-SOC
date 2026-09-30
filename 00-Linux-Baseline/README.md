@@ -1,3 +1,6 @@
+```text
+CatchMe-Linux-SOC/00-Linux-Baseline/README.md
+```
 
 ````markdown
 # 🐧 CatchMe Linux SOC — Linux Baseline
@@ -32,7 +35,7 @@ The baseline documents:
 
 ## 🏗️ Lab Architecture
 
-
+```text
                  ┌─────────────────────────┐
                  │     Elastic SIEM        │
                  │     192.168.1.11        │
@@ -55,6 +58,7 @@ The baseline documents:
                  │ Authentication Logs     │
                  │ Process / System Data   │
                  └─────────────────────────┘
+````
 
 ---
 
