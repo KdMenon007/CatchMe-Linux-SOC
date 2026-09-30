@@ -1,8 +1,3 @@
-```text
-CatchMe-Linux-SOC/00-Linux-Baseline/README.md
-```
-
-````markdown
 # 🐧 CatchMe Linux SOC — Linux Baseline
 
 ## Overview
@@ -58,7 +53,6 @@ The baseline documents:
                  │ Authentication Logs     │
                  │ Process / System Data   │
                  └─────────────────────────┘
-````
 
 ---
 
