@@ -30,7 +30,6 @@ The baseline documents:
 
 ## Lab Architecture
 
-```text
                     ELASTIC SIEM
                     192.168.1.11
                          |
@@ -51,11 +50,10 @@ The baseline documents:
        System          Auditd        SSH/Auth
        Logs            Events         Logs
 
-```text
+
 
 ## SOC Investigation Lifecycle
 
-```text
 Known-Good Baseline
         |
         v
@@ -87,7 +85,6 @@ Remediation
         |
         v
 Re-baseline
-```
 
 ---
 
