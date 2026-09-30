@@ -43,7 +43,6 @@ The Linux endpoint was configured with:
 
 The hostname resolution between the Linux endpoint and Elastic SIEM is expected to resolve as:
 
-```text
 elastic-siem → 192.168.1.11
 ```
 
