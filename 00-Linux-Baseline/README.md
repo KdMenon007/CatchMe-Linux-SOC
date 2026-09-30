@@ -51,7 +51,7 @@ The baseline documents:
        System          Auditd        SSH/Auth
        Logs            Events         Logs
 
----
+```text
 
 ## SOC Investigation Lifecycle
 
