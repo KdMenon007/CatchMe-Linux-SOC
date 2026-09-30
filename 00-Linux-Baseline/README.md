@@ -1,4 +1,17 @@
-# 🐧 CatchMe Linux SOC — Linux Baseline
+```text
+CatchMe-Linux-SOC/00-Linux-Baseline/
+```
+
+### Filename
+
+```text
+README.md
+```
+
+### Copy everything below into `README.md`
+
+````markdown
+# CatchMe Linux SOC — Linux Baseline
 
 ## Overview
 
@@ -10,7 +23,7 @@ A reliable baseline allows security events observed during later investigations 
 
 ---
 
-## 🎯 Objectives
+## Objectives
 
 The baseline documents:
 
@@ -28,101 +41,85 @@ The baseline documents:
 
 ---
 
-## 🏗️ Lab Architecture
+## Lab Architecture
 
 ```text
-                 ┌─────────────────────────┐
-                 │     Elastic SIEM        │
-                 │     192.168.1.11        │
-                 │                         │
-                 │ Elasticsearch           │
-                 │ Kibana                  │
-                 │ Fleet Server            │
-                 └────────────┬────────────┘
-                              │
-                              │ Elastic Agent
-                              │
-                              ▼
-                 ┌─────────────────────────┐
-                 │      Linux Endpoint     │
-                 │      soc-linux          │
-                 │      192.168.1.16       │
-                 │                         │
-                 │ System Logs             │
-                 │ Auditd                  │
-                 │ Authentication Logs     │
-                 │ Process / System Data   │
-                 └─────────────────────────┘
+                    ELASTIC SIEM
+                    192.168.1.11
+                         |
+                         |
+                    Fleet Server
+                         |
+                         |
+                    Elastic Agent
+                         |
+                         |
+                         v
+                 LINUX ENDPOINT
+                    soc-linux
+                  192.168.1.16
+                         |
+          +--------------+--------------+
+          |              |              |
+       System          Auditd        SSH/Auth
+       Logs            Events         Logs
+````
 
-🔄 SOC Investigation Lifecycle
+---
 
-The baseline represents the starting point of the CatchMe Linux SOC investigation lifecycle.
+## SOC Investigation Lifecycle
 
-Known-Good State
-       │
-       ▼
+```text
+Known-Good Baseline
+        |
+        v
 Controlled Attack
-       │
-       ▼
+        |
+        v
 Linux Telemetry
-       │
-       ▼
+        |
+        v
 Elastic SIEM
-       │
-       ▼
+        |
+        v
 Threat Hunting
-       │
-       ▼
+        |
+        v
 Detection
-       │
-       ▼
+        |
+        v
 Alert Investigation
-       │
-       ▼
+        |
+        v
 MITRE ATT&CK Mapping
-       │
-       ▼
+        |
+        v
 Incident Report
-       │
-       ▼
+        |
+        v
 Remediation
-       │
-       ▼
+        |
+        v
 Re-baseline
-
-
-## 🖥️ Endpoint
-
-| Component       | Value                              |
-| --------------- | ---------------------------------- |
-| Hostname        | `soc-linux`                        |
-| Role            | Linux Security Monitoring Endpoint |
-| IP Address      | `192.168.1.16`                     |
-| SIEM            | Elastic Security                   |
-| Agent           | Elastic Agent                      |
-| Audit Framework | Auditd                             |
+```
 
 ---
 
-## 🛡️ SIEM Infrastructure
+## Lab Environment
 
-| Component                 | Value            |
-| ------------------------- | ---------------- |
-| Hostname                  | `elastic-siem`   |
-| IP Address                | `192.168.1.11`   |
-| Platform                  | Elastic Security |
-| Fleet Server              | Enabled          |
-| Endpoint Agent Management | Fleet            |
+| Component      | Hostname     | IP Address   | Role                         |
+| -------------- | ------------ | ------------ | ---------------------------- |
+| Elastic SIEM   | elastic-siem | 192.168.1.11 | SIEM / Kibana / Fleet Server |
+| Linux Endpoint | soc-linux    | 192.168.1.16 | Security monitoring endpoint |
 
 ---
 
-## 📊 Baseline Categories
+## Baseline Categories
 
-### 1. System Information
+### System Information
 
 Documents:
 
-* Hostname
 * Operating system
 * Kernel
 * CPU
@@ -130,30 +127,26 @@ Documents:
 * Disk usage
 * System uptime
 
-See:
+File:
 
-[`system-information.md`](system-information.md)
+`system-information.md`
 
----
-
-### 2. Network Baseline
+### Network Baseline
 
 Documents:
 
 * Network interfaces
-* Assigned IP addresses
-* Routing configuration
-* DNS configuration
-* Listening TCP/UDP ports
-* Active network connections
+* IP configuration
+* Routing
+* DNS
+* Listening ports
+* Active connections
 
-See:
+File:
 
-[`network-baseline.md`](network-baseline.md)
+`network-baseline.md`
 
----
-
-### 3. Services Baseline
+### Services Baseline
 
 Documents:
 
@@ -162,13 +155,11 @@ Documents:
 * Failed services
 * Systemd services
 
-See:
+File:
 
-[`services-baseline.md`](services-baseline.md)
+`services-baseline.md`
 
----
-
-### 4. Users & Privileges
+### Users and Privileges
 
 Documents:
 
@@ -179,17 +170,15 @@ Documents:
 * Privileged accounts
 * UID 0 accounts
 
-See:
+File:
 
-[`users-and-privileges.md`](users-and-privileges.md)
+`users-and-privileges.md`
 
----
-
-### 5. SSH Baseline
+### SSH Baseline
 
 Documents:
 
-* SSH service state
+* SSH service
 * SSH listening configuration
 * Authentication configuration
 * Root login configuration
@@ -197,13 +186,11 @@ Documents:
 * Public-key authentication
 * Authentication activity
 
-See:
+File:
 
-[`ssh-baseline.md`](ssh-baseline.md)
+`ssh-baseline.md`
 
----
-
-### 6. Persistence Baseline
+### Persistence Baseline
 
 Documents:
 
@@ -212,13 +199,11 @@ Documents:
 * Systemd timers
 * Enabled systemd units
 
-See:
+File:
 
-[`persistence-baseline.md`](persistence-baseline.md)
+`persistence-baseline.md`
 
----
-
-### 7. Auditd Baseline
+### Auditd Baseline
 
 Documents:
 
@@ -226,13 +211,11 @@ Documents:
 * Active audit rules
 * Linux auditing configuration
 
-See:
+File:
 
-[`auditd-baseline.md`](auditd-baseline.md)
+`auditd-baseline.md`
 
----
-
-### 8. Elastic Agent Baseline
+### Elastic Agent Baseline
 
 Documents:
 
@@ -242,13 +225,13 @@ Documents:
 * Elastic SIEM resolution
 * Fleet communication
 
-See:
+File:
 
-[`elastic-agent-baseline.md`](elastic-agent-baseline.md)
+`elastic-agent-baseline.md`
 
 ---
 
-## 🔬 Why Baseline Before Attack Simulation?
+## Why Baseline Before Attack Simulation?
 
 Security investigations require context.
 
@@ -260,14 +243,14 @@ Later projects will compare observed activity against this baseline.
 
 ---
 
-## 🧪 Baseline → Attack Comparison
+## Baseline vs Investigation
 
-| Baseline                  | Investigation                |
+| Normal Baseline           | Later Investigation          |
 | ------------------------- | ---------------------------- |
 | Normal processes          | Suspicious process execution |
 | Normal services           | Unexpected service           |
 | Normal network ports      | New listening port           |
-| Normal users              | New/abused account           |
+| Normal users              | New or abused account        |
 | Normal SSH configuration  | SSH persistence              |
 | Normal cron/systemd state | Persistence mechanism        |
 | Normal audit activity     | Suspicious system activity   |
@@ -275,23 +258,23 @@ Later projects will compare observed activity against this baseline.
 
 ---
 
-## 📁 Evidence
+## Evidence
 
-Evidence associated with the baseline is stored under:
+Baseline evidence will be stored in:
 
 ```text
 evidence/
 ```
 
-Screenshots and other evidence will be added as the portfolio is developed.
+Screenshots and relevant sanitized evidence will be added as the portfolio develops.
 
 ---
 
-## 🔐 Security & Sanitization
+## Security and Sanitization
 
 This repository is a public cybersecurity portfolio.
 
-The following information must **never** be committed:
+Never commit:
 
 * Passwords
 * API keys
@@ -304,36 +287,39 @@ The following information must **never** be committed:
 * Real customer information
 * Confidential logs
 
-Evidence uploaded to GitHub must be reviewed and sanitized before publication.
+All evidence must be reviewed and sanitized before publication.
 
 ---
 
-## 📌 Status
+## Project Status
 
-**Baseline Collection:** Completed
-
-**Portfolio Documentation:** In Progress
-
-**Attack Simulations:** Not Started
-
-**Projects Planned:** 25
+| Phase                     | Status      |
+| ------------------------- | ----------- |
+| Lab Setup                 | Completed   |
+| Linux Baseline Collection | Completed   |
+| Baseline Documentation    | In Progress |
+| GitHub Portfolio          | In Progress |
+| Project 01                | Not Started |
+| Total Projects            | 25          |
 
 ---
 
-## 🔗 Next Phase
+## Next Phase
 
-After the Linux baseline is documented, the CatchMe Linux SOC project series will begin with:
+After the Linux baseline documentation is completed, the CatchMe Linux SOC project series will begin.
 
-**Project 01 — SSH Brute Force Investigation**
+### Project 01
 
-The investigation will follow:
+**SSH Brute Force Investigation**
+
+The investigation workflow will follow:
 
 ```text
 Attack
   ↓
 Telemetry
   ↓
-Threat Hunt
+Threat Hunting
   ↓
 Detection
   ↓
