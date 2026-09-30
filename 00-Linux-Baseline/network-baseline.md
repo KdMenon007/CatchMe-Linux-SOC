@@ -1,87 +1,76 @@
 # Network Baseline
 
-## Endpoint Identity
+## Network Identity
 
 | Field | Value |
 |---|---|
-| Hostname | `soc-linux` |
+| Endpoint Hostname | `soc-linux` |
 | Endpoint IP Address | `192.168.1.16` |
 | Endpoint Role | Linux SOC Monitoring Endpoint |
 | SIEM Hostname | `elastic-siem` |
 | SIEM IP Address | `192.168.1.11` |
 | SIEM Role | Elastic SIEM / Kibana / Fleet Server |
-| Network | `192.168.1.0/24` |
+| Network Range | `192.168.1.0/24` |
 
 ## Network Architecture
 
 ```text
-                    Local Network
-                    192.168.1.0/24
-                           |
-              +------------+------------+
-              |                         |
-              |                         |
-              v                         v
-       ELASTIC SIEM               LINUX ENDPOINT
-       elastic-siem                  soc-linux
-       192.168.1.11                192.168.1.16
-              |                         |
-              |                         |
-       Elasticsearch               Elastic Agent
-       Kibana                      Auditd
-       Fleet Server                Linux Telemetry
+                    CatchMe Linux SOC
 
-## Network Configuration Baseline
+                 Local Network
+                 192.168.1.0/24
+                        |
+            +-----------+-----------+
+            |                       |
+            v                       v
+      elastic-siem              soc-linux
+      192.168.1.11             192.168.1.16
+            |                       |
+            |                   Elastic Agent
+            |                       |
+            |                     Auditd
+            |                       |
+            +----------+------------+
+                       |
+                 Security Telemetry
+```
+## Network Components
 
-The Linux endpoint was configured with:
+| Component      | Hostname       | IP Address     | Role                                  |
+| -------------- | -------------- | -------------- | ------------------------------------- |
+| Elastic SIEM   | `elastic-siem` | `192.168.1.11` | Elasticsearch / Kibana / Fleet Server |
+| Linux Endpoint | `soc-linux`    | `192.168.1.16` | Monitored Linux endpoint              |
+| Fleet Server   | `elastic-siem` | `192.168.1.11` | Elastic Agent management              |
 
-* Hostname: `soc-linux`
-* IP address: `192.168.1.16`
-* Elastic SIEM: `192.168.1.11`
-* Network range: `192.168.1.0/24`
-* Elastic/Fleet hostname: `elastic-siem`
+## Hostname Resolution
 
-The hostname resolution between the Linux endpoint and Elastic SIEM is expected to resolve as:
+The Linux endpoint uses the Elastic SIEM hostname for Fleet communication.
 
+Expected resolution:
+
+```text
 elastic-siem → 192.168.1.11
 ```
 
-## Network Components
+This hostname-to-IP mapping is an important part of the lab baseline.
 
-| Component      | Hostname       | IP             | Function                 |
-| -------------- | -------------- | -------------- | ------------------------ |
-| Elastic SIEM   | `elastic-siem` | `192.168.1.11` | SIEM infrastructure      |
-| Linux Endpoint | `soc-linux`    | `192.168.1.16` | Monitored endpoint       |
-| Fleet Server   | `elastic-siem` | `192.168.1.11` | Elastic Agent management |
+Any unexpected change should be verified before modifying Elastic or Fleet configuration.
 
-## Expected Elastic Communication
+## Network Configuration
 
-The Linux endpoint communicates with the Elastic infrastructure for telemetry and agent management.
+The baseline records:
 
-```text
-soc-linux
-   |
-   | Elastic Agent
-   |
-   +------ HTTPS ------> elastic-siem:8220
-   |                     Fleet Server
-   |
-   +------ HTTPS ------> Elastic infrastructure
-```
+* Network interfaces
+* Assigned IP addresses
+* Routing information
+* DNS configuration
+* Listening TCP ports
+* Listening UDP ports
+* Active network connections
 
-Fleet Server communication uses:
-
-```text
-https://elastic-siem:8220
-```
-
-## Network Baseline Collection
-
-The following information was collected from the Linux endpoint:
+## Network Collection Commands
 
 ### Network Interfaces
-
-Collected using:
 
 ```bash
 ip -br addr
@@ -90,12 +79,10 @@ ip -br addr
 Purpose:
 
 * Identify active interfaces
-* Identify assigned IP addresses
-* Establish the normal endpoint network identity
+* Identify assigned addresses
+* Establish endpoint network identity
 
 ### Routing
-
-Collected using:
 
 ```bash
 ip route
@@ -103,13 +90,11 @@ ip route
 
 Purpose:
 
-* Identify the default route
 * Identify connected networks
-* Establish the normal routing state
+* Identify default gateway
+* Establish normal routing state
 
 ### DNS
-
-Collected using:
 
 ```bash
 resolvectl status
@@ -117,13 +102,11 @@ resolvectl status
 
 Purpose:
 
-* Identify configured DNS servers
-* Establish the normal DNS configuration
+* Identify DNS configuration
+* Establish normal name-resolution state
 * Support investigation of suspicious DNS activity
 
-### Listening Ports
-
-Collected using:
+### Listening Services
 
 ```bash
 sudo ss -tulpen
@@ -133,12 +116,10 @@ Purpose:
 
 * Identify TCP listeners
 * Identify UDP listeners
+* Identify listening addresses
 * Identify processes associated with listening ports
-* Establish the normal network attack surface
 
 ### Active Connections
-
-Collected using:
 
 ```bash
 sudo ss -tunap
@@ -146,32 +127,61 @@ sudo ss -tunap
 
 Purpose:
 
-* Identify active connections
-* Identify remote endpoints
-* Correlate network connections with local processes
+* Identify established connections
+* Identify local and remote endpoints
+* Identify associated processes
 * Establish normal network activity
 
-## Security-Relevant Network Baseline
+## Expected Elastic Communication
 
-During future investigations, the following changes should be treated as investigation points:
+The Linux endpoint communicates with Fleet Server using:
 
-| Observation                           | Investigation Question                                   |
-| ------------------------------------- | -------------------------------------------------------- |
-| New listening port                    | What service opened the port?                            |
-| New process listening on a known port | Is the process legitimate?                               |
-| Unexpected outbound connection        | Why is the endpoint communicating with this destination? |
-| Unexpected remote IP                  | Is the destination expected?                             |
-| New DNS server                        | Was the DNS configuration modified?                      |
-| New network interface                 | Why was the interface created or enabled?                |
-| Unexpected routing change             | Was routing modified by an attacker or administrator?    |
-| Unknown process with network activity | What executed the process and under which user?          |
+```text
+https://elastic-siem:8220
+```
+
+Network flow:
+
+```text
+soc-linux
+192.168.1.16
+     |
+     | HTTPS / TCP 8220
+     |
+     v
+elastic-siem
+192.168.1.11
+Fleet Server
+```
+
+## Network Security Baseline
+
+The following observations should be compared against this baseline during future investigations:
+
+| Observation                       | Investigation Focus                           |
+| --------------------------------- | --------------------------------------------- |
+| New listening port                | Identify the service and process              |
+| Unexpected listening address      | Determine why the service is exposed          |
+| New process with network activity | Identify process, user and parent process     |
+| Unexpected remote IP              | Determine destination and purpose             |
+| Unexpected outbound connection    | Correlate with process and user               |
+| New DNS configuration             | Check for configuration modification          |
+| Unexpected route                  | Check for unauthorized network changes        |
+| New network interface             | Determine whether it was legitimately created |
+| Unexpected Fleet destination      | Verify Elastic/Fleet configuration            |
 
 ## Network Investigation Correlation
 
-Network activity should be correlated with other Linux telemetry.
+Network events should be correlated with other Linux telemetry:
 
 ```text
 Network Connection
+        |
+        +---- Source IP
+        |
+        +---- Destination IP
+        |
+        +---- Destination Port
         |
         +---- Process
         |
@@ -188,20 +198,19 @@ Network Connection
         +---- Elastic SIEM Event
 ```
 
-## Baseline Verification
+## Baseline Security Considerations
 
-The following conditions define the expected network identity of the lab:
+The CatchMe Linux SOC lab requires stable endpoint addressing.
+
+Expected lab addresses:
 
 ```text
-Linux Endpoint
-Hostname: soc-linux
-IP:       192.168.1.16
-
 Elastic SIEM
 Hostname: elastic-siem
 IP:       192.168.1.11
 
-Fleet Server
-Host:     https://elastic-siem:8220
+Linux Endpoint
+Hostname: soc-linux
+IP:       192.168.1.16
 ```
 
