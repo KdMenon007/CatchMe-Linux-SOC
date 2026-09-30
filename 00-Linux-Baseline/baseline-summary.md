@@ -1,4 +1,3 @@
-````markdown
 # Linux Baseline Summary
 
 ## Purpose
@@ -60,7 +59,6 @@ Incident Response
 Remediation
         ↓
 Re-baseline
-````
 
 ## Baseline Evidence
 
