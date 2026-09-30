@@ -54,13 +54,10 @@ The baseline documents:
                  │ Process / System Data   │
                  └─────────────────────────┘
 
----
-
-## 🔄 SOC Investigation Lifecycle
+🔄 SOC Investigation Lifecycle
 
 The baseline represents the starting point of the CatchMe Linux SOC investigation lifecycle.
 
-```text
 Known-Good State
        │
        ▼
@@ -92,9 +89,7 @@ Remediation
        │
        ▼
 Re-baseline
-```
 
----
 
 ## 🖥️ Endpoint
 
