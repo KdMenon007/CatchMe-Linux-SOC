@@ -49,6 +49,8 @@ Identify Process
 Investigate Service
         ↓
 Determine Whether Activity Is Expected
+```text
+
 
 ## Active Connections
 
