@@ -1,0 +1,2 @@
+Binary: 9.5.2 (build: 92fc15c077f79efc81f2b1bfa72d2e250d3ed6c6 at 2026-08-17 19:31:55 +0000 UTC)
+Daemon: 9.5.2 (build: 92fc15c077f79efc81f2b1bfa72d2e250d3ed6c6 at 2026-08-17 19:31:55 +0000 UTC)

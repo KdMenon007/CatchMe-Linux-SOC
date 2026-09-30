@@ -1,0 +1,23 @@
+● ssh.service - OpenBSD Secure Shell server
+     Loaded: loaded (/usr/lib/systemd/system/ssh.service; disabled; preset: enabled)
+     Active: active (running) since Wed 2026-09-30 05:28:03 UTC; 4h 44min ago
+TriggeredBy: ● ssh.socket
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+   Main PID: 1486 (sshd)
+      Tasks: 1 (limit: 4556)
+     Memory: 3.7M (peak: 6.7M)
+        CPU: 237ms
+     CGroup: /system.slice/ssh.service
+             └─1486 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups"
+
+Sep 30 05:28:06 soc-linux sshd[1487]: Accepted password for socadmin from 192.168.1.10 port 55754 ssh2
+Sep 30 05:28:06 soc-linux sshd[1487]: pam_unix(sshd:session): session opened for user socadmin(uid=1000) by socadmin(uid=0)
+Sep 30 06:04:30 soc-linux sshd[1589]: Accepted password for socadmin from 192.168.1.10 port 46820 ssh2
+Sep 30 06:04:30 soc-linux sshd[1589]: pam_unix(sshd:session): session opened for user socadmin(uid=1000) by socadmin(uid=0)
+Sep 30 07:26:29 soc-linux sshd[2802]: Accepted password for socadmin from 192.168.1.10 port 41822 ssh2
+Sep 30 07:26:29 soc-linux sshd[2802]: pam_unix(sshd:session): session opened for user socadmin(uid=1000) by socadmin(uid=0)
+Sep 30 07:52:46 soc-linux sshd[4101]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=192.168.1.10  user=socadmin
+Sep 30 07:52:48 soc-linux sshd[4101]: Failed password for socadmin from 192.168.1.10 port 41694 ssh2
+Sep 30 07:52:51 soc-linux sshd[4101]: Accepted password for socadmin from 192.168.1.10 port 41694 ssh2
+Sep 30 07:52:51 soc-linux sshd[4101]: pam_unix(sshd:session): session opened for user socadmin(uid=1000) by socadmin(uid=0)
