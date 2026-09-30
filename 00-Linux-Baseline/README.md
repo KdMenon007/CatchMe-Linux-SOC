@@ -52,8 +52,9 @@ The baseline documents:
 
 
 
-## SOC Investigation Lifecycle
 
+## SOC Investigation Lifecycle
+```text
 Known-Good Baseline
         |
         v
@@ -85,7 +86,7 @@ Remediation
         |
         v
 Re-baseline
-
+```
 ---
 
 ## Lab Environment
