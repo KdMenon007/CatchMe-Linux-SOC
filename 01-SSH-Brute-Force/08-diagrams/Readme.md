@@ -4,7 +4,7 @@
 
 This directory contains the visual documentation for **Project 01: Linux SSH Brute Force Detection**.
 
-The diagrams provide a visual representation of the complete SOC investigation, including the lab architecture, attack path, telemetry flow, detection engineering, investigation timeline, evidence correlation, detection logic, and complete end-to-end workflow.
+The diagrams provide a visual representation of the complete SOC investigation, including the lab architecture, attack path, telemetry flow, detection engineering, threat hunting, investigation timeline, evidence correlation, detection logic, MITRE ATT&CK mapping, and complete end-to-end workflow.
 
 ---
 
@@ -20,6 +20,7 @@ Includes:
 
 - Kali attacker
 - Linux SOC endpoint
+- Windows SOC endpoint
 - Elastic SIEM
 - Network relationships
 - Attack and monitoring components
@@ -40,6 +41,7 @@ soc-linux
 elastic-siem
 192.168.1.11
 ```
+
 ---
 
 ### 02 — Attack Flow
@@ -302,6 +304,113 @@ The diagram provides the relationship between the physical/logical lab architect
 
 ---
 
+### 12 — SOC Infographic Poster
+
+**File:** `12-SOC Infographic Poster.png`
+
+Provides a portfolio-style visual summary of Project 01.
+
+The infographic presents the major components of the investigation, including:
+
+* SSH brute-force activity
+* Linux endpoint
+* Elastic SIEM telemetry
+* Detection
+* Investigation
+* Evidence
+* MITRE ATT&CK
+* Incident response
+
+This diagram is intended as a high-level visual summary rather than a replacement for the detailed investigation diagrams.
+
+---
+
+### 13 — KQL Hunting Flow
+
+**File:** `13-KQL Hunting Flow.png`
+
+Shows the KQL-based threat-hunting workflow used during the Project 01 investigation.
+
+```text
+Linux Endpoint
+      ↓
+Log Ingestion
+      ↓
+Elastic SIEM
+      ↓
+KQL Hunting
+      ↓
+Filter & Analyze
+      ↓
+Correlate Evidence
+      ↓
+Identify Suspicious Activity
+      ↓
+Detection / Investigation
+```
+
+The diagram also represents the progression from authentication-failure searches to source-IP correlation, user analysis, threshold-based investigation, and time-based analysis.
+
+---
+
+### 14 — Threat Hunting Flow
+
+**File:** `14-Threat Hunting Flow.png`
+
+Shows the proactive threat-hunting process used to investigate suspicious SSH authentication activity.
+
+```text
+Hypothesis
+    ↓
+Gather Data
+    ↓
+Hunt in Elastic
+    ↓
+Analyze & Correlate
+    ↓
+Validate Findings
+    ↓
+Take Action
+```
+
+The hunting workflow focuses on:
+
+* Multiple failed SSH attempts
+* Source IP analysis
+* Targeted usernames
+* Authentication patterns
+* Time-based activity
+* Process correlation
+* Validation of suspicious activity
+* Detection engineering
+
+---
+
+### 15 — MITRE ATT&CK Mapping
+
+**File:** `15-MITRE ATT&CK Mapping.png`
+
+Maps the observed Project 01 SSH brute-force activity and related potential attack progression to the MITRE ATT&CK framework.
+
+Primary observed activity:
+
+```text
+SSH Authentication Failures
+          ↓
+MITRE ATT&CK
+          ↓
+T1110 — Brute Force
+```
+
+The diagram also provides contextual mapping for potential subsequent activity if successful access were achieved.
+
+Important distinction:
+
+* **T1110 — Brute Force** is directly relevant to the demonstrated activity.
+* Other mapped techniques representing successful access, execution, persistence, lateral movement, or impact are potential attack progression and were **not demonstrated during Project 01**.
+
+---
+
 # Diagram Coverage
 
 The Project 01 diagram set covers the following areas:
@@ -312,14 +421,18 @@ The Project 01 diagram set covers the following areas:
 | Attack Flow             | Yes     |
 | Telemetry Pipeline      | Yes     |
 | Detection Engineering   | Yes     |
+| KQL Threat Hunting      | Yes     |
+| Threat Hunting Workflow | Yes     |
 | Investigation Timeline  | Yes     |
 | Log Correlation         | Yes     |
 | Sequence Flow           | Yes     |
 | Evidence Correlation    | Yes     |
 | Detection Rule Logic    | Yes     |
 | Investigation Workflow  | Yes     |
+| MITRE ATT&CK Mapping    | Yes     |
 | End-to-End SOC Workflow | Yes     |
 | Complete Data Flow      | Yes     |
+| SOC Portfolio Summary   | Yes     |
 
 ---
 
@@ -372,7 +485,7 @@ All diagram filenames use numbered prefixes to maintain a consistent visual orde
 02-...
 03-...
 ...
-11-...
+15-...
 ```
 
 This allows the diagrams to be viewed in the same logical order as the SOC investigation.
@@ -403,6 +516,14 @@ This allows the diagrams to be viewed in the same logical order as the SOC inves
 10 Complete End-to-End Visual
         ↓
 11 Complete Lab Architecture & Data Flow
+        ↓
+12 SOC Infographic Poster
+        ↓
+13 KQL Hunting Flow
+        ↓
+14 Threat Hunting Flow
+        ↓
+15 MITRE ATT&CK Mapping
 ```
 
 
