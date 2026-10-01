@@ -575,6 +575,3 @@ Alert Investigation
 **Successful password:** Not observed
 
 **Successful compromise:** Not demonstrated
-
-
-```
