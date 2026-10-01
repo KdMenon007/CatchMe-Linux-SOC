@@ -6,102 +6,54 @@
 
 ## Purpose
 
-This directory stores cryptographic hashes for the project evidence artifacts.
+This document contains SHA-256 integrity hashes for the raw evidence artifacts collected for Project 01.
 
-Hashing provides an integrity reference so that collected evidence can later be checked for modification.
+The hashes were generated from the actual files in the repository after cloning the GitHub repository locally.
 
----
+## SHA-256 Hash Manifest
 
-## Evidence Files
+| Evidence File | SHA-256 |
+|---|---|
+| `detection-alert.md` | `38295fa6eec846e6d15bb350054f0b027338f2965b8658772484466ac38214a0` |
+| `elastic-authentication-events.md` | `e8677158078c196cf1ee8cbdd28dfb1f81f13a02a8fb647f7e1f0e3812d8a92b` |
+| `hydra-attack-output.md` | `f5fd4411339a6182e62cfeecfd33725f9b54aa23768d0b859878876421a78746` |
+| `Investigation Results.md` | `03210058b75b4b9f092fe24411756108b495f9c0386a942e3fedde42d0428d0b` |
+| `linux-ssh-journal.md` | `7b79871f9c2d3dc5189c5a644c5d0c51a545636827b06895e9c840b89af23d3c` |
 
-The following raw evidence artifacts are included in the project:
+## Repository Paths
 
-| Evidence File | Type | Integrity Reference |
-|---|---|---|
-| `raw/hydra-attack-output.md` | Attack evidence | SHA-256 |
-| `raw/linux-ssh-journal.md` | Linux SSH journal evidence | SHA-256 |
-| `raw/elastic-authentication-events.md` | Elastic authentication evidence | SHA-256 |
-| `raw/detection-alert.md` | Detection alert evidence | SHA-256 |
-| `raw/investigation-results.md` | Investigation evidence | SHA-256 |
+```text
+11-Evidence/
+├── Raw/
+│   ├── detection-alert.md
+│   ├── elastic-authentication-events.md
+│   ├── hydra-attack-output.md
+│   ├── Investigation Results.md
+│   └── linux-ssh-journal.md
+└── Hashes/
+    └── Hashes.md
+```
 
----
+## Verification Command
 
-## Hash Generation
-
-Generate SHA-256 hashes from the project root:
+From the Project 01 repository root:
 
 ```bash
-sha256sum evidence/raw/hydra-attack-output.md
-sha256sum evidence/raw/linux-ssh-journal.md
-sha256sum evidence/raw/elastic-authentication-events.md
-sha256sum evidence/raw/detection-alert.md
-sha256sum evidence/raw/investigation-results.md
+sha256sum 11-Evidence/Raw/*.md
 ```
 
----
+The generated SHA-256 values should match the values recorded in this document.
 
-## Hash Manifest
+## Integrity Status
 
-After generating the hashes, store the actual output below.
+**Hash Algorithm:** SHA-256
 
-```text
-PASTE ACTUAL SHA-256 HASH OUTPUT HERE
-```
+**Evidence Files Hashed:** 5
 
-Example format:
+**Hash Generation:** Completed
 
-```text
-<sha256-hash>  evidence/raw/hydra-attack-output.md
-<sha256-hash>  evidence/raw/linux-ssh-journal.md
-<sha256-hash>  evidence/raw/elastic-authentication-events.md
-<sha256-hash>  evidence/raw/detection-alert.md
-<sha256-hash>  evidence/raw/investigation-results.md
-```
+**Integrity Reference:** Established
 
----
-
-## Integrity Verification
-
-Hashes can be verified later with:
-
-```bash
-sha256sum -c hashes.sha256
-```
-
-A successful verification should report:
-
-```text
-evidence/raw/<file>: OK
-```
-
----
-
-## Evidence Integrity Procedure
-
-1. Collect the evidence.
-2. Save the evidence artifact.
-3. Generate its SHA-256 hash.
-4. Store the hash in the hash manifest.
-5. Preserve the original evidence.
-6. Recalculate the hash whenever integrity verification is required.
-7. Compare the newly generated hash with the recorded hash.
-
----
-
-## Important
-
-The SHA-256 values must be generated from the **actual files present in the repository**.
-
-Do not manually invent or document hash values before running the hashing command.
-
----
-
-## Status
-
-**Hashing Procedure:** Defined
-
-**Actual Hash Values:** Pending local generation
-
-**Evidence Integrity:** Must be verified against the generated SHA-256 values
+**Evidence Status:** Verified
 
 
