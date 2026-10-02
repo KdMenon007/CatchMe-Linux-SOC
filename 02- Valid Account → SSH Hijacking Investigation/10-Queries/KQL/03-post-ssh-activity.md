@@ -1,71 +1,59 @@
-# Project 02 — Detection Rule Query
+# Project 02 — Post-SSH Activity Hunt
 
 ## Purpose
 
-Detect SSH activity on the monitored Linux endpoint when the activity originates from a remote source.
+Identify SSH-related activity associated with the affected user account and the SSH daemon process during the Project 02 attack window.
 
 ## KQL
 
 ```kql
-host.name : "soc-linux" and process.name : "sshd" and source.ip : *
+host.name : "soc-linux" and user.name : "socadmin" and process.name : "sshd"
 ```
 
-## Detection Rule
+## Time Range
 
-**Rule Name:** `CatchMe - Linux SSH Valid Account Activity`
+**2026-10-02 08:36:00 IST → 2026-10-02 08:37:00 IST**
 
-**Rule Type:** Query
+## Investigation Context
 
-**Severity:** Medium
-
-**Risk Score:** 47
-
-**Schedule:** Every 1 minute
-
-**Look-back:** 1 minute
-
-**Alert Suppression:** Disabled
-
-## Detection Logic
-
-The rule searches for SSH daemon activity on `soc-linux` where a source IP is present.
-
-The logic provides visibility into remote SSH activity that can then be investigated for:
-
-* Valid-account abuse
-* Unexpected SSH sources
-* Suspicious remote access
-* SSH authentication activity
-* Post-authentication activity
-
-## Validation
-
-The detection rule generated an alert during Project 02 validation.
-
-Observed alert context included:
+The query correlates:
 
 * Host: `soc-linux`
-* Process: `sshd`
-* Source IP: `192.168.1.10`
 * User: `socadmin`
-* Event action: `ssh_login`
+* Process: `sshd`
+
+It was used to examine SSH activity associated with the affected account following the valid-account access scenario.
+
+## Observed Result
+
+The query returned **5 events** during the selected time window.
+
+Observed event actions included:
+
+* `authentication_failure`
+* `ssh_login`
+* `logged-on`
+* `logged-off`
 
 ## Evidence
 
-Detection screenshots:
+Corresponding hunting screenshot:
 
-`09-Screenshots/Detection/01-elastic-valid-account-alert.png`
+`09-Screenshots/Hunting/03-post-ssh-activity-hunt.png`
 
-`09-Screenshots/Detection/02-detection-rule-overview.png`
+## Correlation Note
 
-`09-Screenshots/Detection/03-detection-alert-generated.png`
+The Elastic event stream should be correlated with the Linux SSH journal and raw authentication evidence before determining the meaning of individual authentication events.
+
+The observed `08:36:24` activity corresponds to the subsequent failed authentication activity recorded by the Linux SSH service and should not be interpreted as a separate successful SSH login.
 
 ## Project Mapping
 
 * **Project:** 02 — Valid Account → SSH Hijacking
-* **Phase:** Detection Engineering
+* **Phase:** Threat Hunting
 * **Platform:** Elastic Security
+* **Data Source:** Linux SSH / authentication telemetry
 * **Endpoint:** `soc-linux`
+* **Account:** `socadmin`
 * **Process:** `sshd`
-
 
