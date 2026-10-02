@@ -4,19 +4,20 @@
 
 This attack simulation demonstrates a controlled valid-account abuse scenario against the CatchMe Linux SOC lab.
 
-The attacker used a password-guessing tool against the controlled SSH service on `soc-linux`. After identifying a valid credential for the `socadmin` account, the attacker used the credential to establish an SSH session from the Kali attacker system.
+The attacker used Hydra against the controlled SSH service on `soc-linux` to perform credential guessing. A valid credential for the `socadmin` account was identified during the controlled attack. The discovered credential was then used for SSH access to the Linux endpoint.
 
 The objective was to demonstrate:
 
-- Credential guessing against SSH
-- Identification of a valid account credential
+- Controlled SSH credential guessing
+- Identification of a valid lab credential
 - Valid Account abuse
-- SSH authentication from an external source
-- SSH session establishment and termination
-- Endpoint and Elastic SIEM telemetry correlation
-- Evidence collection from attacker, endpoint, and SIEM perspectives
+- SSH authentication from the attacker system
+- SSH session activity
+- Endpoint authentication telemetry
+- Elastic SIEM telemetry correlation
+- SOC evidence collection
 
-No persistence, privilege escalation, credential dumping, destructive activity, or unauthorized modification of the Linux endpoint was performed.
+No persistence, privilege escalation, credential dumping, destructive activity, or unauthorized endpoint modification was performed.
 
 ---
 
@@ -48,20 +49,23 @@ SSH Service
       |
       | Valid credential identified
       v
-socadmin authentication
+socadmin
       |
-      | SSH login
+      | SSH authentication
       v
 soc-linux
       |
       v
-Elastic Agent / Filebeat
+SSH / Authentication Telemetry
+      |
+      v
+Elastic Agent
       |
       v
 Elastic SIEM
       |
       v
-SOC Investigation
+SOC Threat Hunting & Investigation
 ```
 
 ---
@@ -85,25 +89,23 @@ Source: 192.168.1.10
 
 Hydra identified a valid credential for the `socadmin` account.
 
-The actual password is intentionally excluded from this documentation.
+The actual password is intentionally excluded from the repository.
 
 ### Evidence
-
-Attacker-side terminal evidence:
 
 ```text
 09-Screenshots/Attack/01-hydra-credential-discovery.png
 ```
 
-This screenshot provides the attacker-side evidence of the credential discovery stage.
+This screenshot provides attacker-side evidence of the controlled credential-discovery stage.
 
 ---
 
 ## 5. Valid Account SSH Access
 
-After the valid credential was identified, the attacker used the `socadmin` account to authenticate to the Linux endpoint through SSH.
+After the credential was identified, the attacker used the `socadmin` account to authenticate to `soc-linux` through SSH.
 
-The SSH connection originated from:
+The connection originated from:
 
 ```text
 192.168.1.10
@@ -112,7 +114,7 @@ The SSH connection originated from:
 and targeted:
 
 ```text
-192.168.1.16
+192.168.1.16:22
 ```
 
 The account used was:
@@ -121,16 +123,29 @@ The account used was:
 socadmin
 ```
 
-The attacker subsequently verified the authenticated session using controlled commands such as:
+After authentication, the attacker performed controlled session validation and system discovery commands:
 
 ```text
 whoami
 hostname
 id
 echo "$SSH_CONNECTION"
+pwd
+ls -la
+uname -a
+cat /etc/os-release
+ps -p $$ -o pid,ppid,user,comm,args
 ```
 
-No persistence mechanism or endpoint configuration modification was performed.
+The observed session confirmed:
+
+```text
+hostname: soc-linux
+user: socadmin
+source: 192.168.1.10
+```
+
+No persistence mechanism, SSH key modification, privilege escalation, or endpoint configuration modification was performed.
 
 ### Evidence
 
@@ -144,23 +159,51 @@ No persistence mechanism or endpoint configuration modification was performed.
 
 The Linux endpoint generated SSH authentication telemetry showing activity from the Kali attacker.
 
-The raw authentication evidence contained the successful authentication message:
+The SSH journal recorded:
 
 ```text
-Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
+08:36:21 IST
+Received disconnect from 192.168.1.10 port 40596 [preauth]
+
+08:36:21 IST
+Disconnected from authenticating user socadmin 192.168.1.10 port 40596 [preauth]
+
+08:36:22 IST
+pam_unix(sshd:auth): authentication failure
 ```
 
-The corresponding event was timestamped:
+The successful credential validation was then recorded:
 
 ```text
-2026-10-02 08:36:22.295 IST
+08:36:22 IST
+Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
+
+08:36:22 IST
+pam_unix(sshd:session): session opened for user socadmin(uid=1000)
+```
+
+The corresponding session was closed shortly afterward:
+
+```text
+08:36:22 IST
+pam_unix(sshd:session): session closed for user socadmin
+```
+
+A subsequent authentication attempt from the same attacker source was also recorded:
+
+```text
+08:36:24 IST
+Failed password for socadmin from 192.168.1.10 port 40600 ssh2
+
+08:36:25 IST
+Connection closed by authenticating user socadmin 192.168.1.10 port 40600 [preauth]
 ```
 
 ### Raw Linux Evidence
 
 ```text
-09-Screenshots/Attack/03-linux-raw-auth-log.png
-09-Screenshots/Attack/04-linux-ssh-journal.png
+09-Screenshots/Telemetry/01-linux-raw-auth-log.png
+09-Screenshots/Telemetry/02-linux-ssh-journal.png
 ```
 
 These screenshots preserve the endpoint-side authentication evidence.
@@ -169,7 +212,7 @@ These screenshots preserve the endpoint-side authentication evidence.
 
 ## 7. Elastic SIEM Authentication Evidence
 
-Elastic SIEM was queried for SSH activity originating from the Kali attacker.
+Elastic SIEM received SSH authentication and session telemetry from `soc-linux`.
 
 ### Authentication Correlation Query
 
@@ -177,7 +220,7 @@ Elastic SIEM was queried for SSH activity originating from the Kali attacker.
 host.name : "soc-linux" and user.name : "socadmin" and source.ip : "192.168.1.10"
 ```
 
-The query returned authentication and session events associated with the attack.
+The query returned multiple authentication and session-related events associated with the attacker source.
 
 ### Observed Authentication Sequence
 
@@ -193,12 +236,12 @@ The query returned authentication and session events associated with the attack.
 | 08:36:24.042    | `logged-in`              |
 | 08:36:24.043    | `ssh_login`              |
 
-The Elastic evidence demonstrates failed authentication activity followed by successful SSH authentication and session-related events from the attacker source.
+The Elastic telemetry demonstrates authentication activity involving the same attacker source and `socadmin` account.
 
 ### Evidence
 
 ```text
-09-Screenshots/Attack/05-elastic-authentication-chain.png
+09-Screenshots/Telemetry/03-elastic-authentication-chain.png
 ```
 
 ---
@@ -223,32 +266,32 @@ Observed fields:
 ### Evidence
 
 ```text
-09-Screenshots/Attack/06-elastic-ssh-login-event.png
+09-Screenshots/Telemetry/04-elastic-ssh-login-event.png
 ```
 
 ---
 
 ## 9. Raw Authentication Message in Elastic
 
-The expanded Elastic event also exposed the underlying authentication message:
+The expanded Elastic event exposed the underlying SSH authentication message:
 
 ```text
 Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
 ```
 
-This correlates the structured Elastic fields with the underlying SSH authentication message.
+This correlates the structured Elastic event fields with the underlying SSH authentication message.
 
 ### Evidence
 
 ```text
-09-Screenshots/Attack/07-elastic-raw-auth-message.png
+09-Screenshots/Telemetry/05-elastic-raw-auth-message.png
 ```
 
 ---
 
 ## 10. Authentication Failure Evidence
 
-Before the successful authentication, Elastic recorded an authentication failure from the same source and account.
+Elastic recorded an authentication failure associated with the same attacker source and account.
 
 Observed event:
 
@@ -270,14 +313,14 @@ host.name : "soc-linux" and process.name : "sshd" and event.action : "authentica
 ### Evidence
 
 ```text
-09-Screenshots/Attack/08-elastic-authentication-failure.png
+09-Screenshots/Telemetry/06-elastic-authentication-failure.png
 ```
 
 ---
 
 ## 11. SSH Session Establishment
 
-Elastic recorded the establishment of an SSH session associated with the `socadmin` account.
+Elastic recorded an SSH session-related event associated with the `socadmin` account.
 
 Observed event:
 
@@ -298,14 +341,14 @@ host.name : "soc-linux" and user.name : "socadmin" and source.ip : "192.168.1.10
 ### Evidence
 
 ```text
-09-Screenshots/Attack/09-elastic-ssh-session-start.png
+09-Screenshots/Telemetry/07-elastic-ssh-session-start.png
 ```
 
 ---
 
 ## 12. SSH Session Termination
 
-Elastic also recorded termination of the associated session.
+Elastic recorded termination of the associated session.
 
 Observed event:
 
@@ -326,7 +369,7 @@ host.name : "soc-linux" and user.name : "socadmin" and source.ip : "192.168.1.10
 ### Evidence
 
 ```text
-09-Screenshots/Attack/10-elastic-ssh-session-end.png
+09-Screenshots/Telemetry/08-elastic-ssh-session-end.png
 ```
 
 ---
@@ -335,7 +378,7 @@ host.name : "soc-linux" and user.name : "socadmin" and source.ip : "192.168.1.10
 
 A search was performed for process telemetry associated with the authenticated `socadmin` session.
 
-Queries included searches for:
+Queries included:
 
 ```kql
 host.name : "soc-linux" and user.name : "socadmin" and process.name : ("bash" or "sh" or "uname" or "ls" or "whoami" or "id" or "cat")
@@ -357,27 +400,26 @@ Therefore, the project does **not** claim that the post-login discovery commands
 Post-login process telemetry: NOT OBSERVED
 ```
 
-This is documented as a telemetry visibility limitation rather than treated as evidence of absence of command execution.
+This is documented as a telemetry visibility limitation rather than treated as evidence that the commands were not executed.
 
 ---
 
 ## 14. Attack Timeline
 
-| Time (IST)   | Activity                                | Evidence Source    |
-| ------------ | --------------------------------------- | ------------------ |
-| Attack phase | Hydra credential guessing               | Kali terminal      |
-| Attack phase | Valid `socadmin` credential identified  | Hydra output       |
-| 08:36:22.292 | SSH authentication failure              | Elastic            |
-| 08:36:22.294 | Authorization event                     | Elastic            |
-| 08:36:22.295 | SSH login                               | Elastic            |
-| 08:36:22.295 | Credential-related authentication event | Elastic            |
-| 08:36:22.478 | SSH session started                     | Elastic            |
-| 08:36:22.479 | Session event                           | Elastic            |
-| 08:36:24.042 | User logged in                          | Elastic            |
-| 08:36:24.043 | SSH login event                         | Elastic            |
-| Post-login   | Controlled discovery commands executed  | Attacker terminal  |
-| Post-login   | Matching process telemetry not observed | Elastic query      |
-| Session end  | SSH session terminated                  | Endpoint / Elastic |
+| Time (IST)         | Activity                                 | Evidence Source    |
+| ------------------ | ---------------------------------------- | ------------------ |
+| Attack phase       | Hydra credential guessing                | Kali terminal      |
+| Attack phase       | Valid `socadmin` credential identified   | Hydra output       |
+| 08:36:21           | Pre-authentication connection terminated | Linux SSH journal  |
+| 08:36:22.292       | Authentication failure                   | Elastic            |
+| 08:36:22.295       | Successful SSH authentication            | Linux / Elastic    |
+| 08:36:22.478       | SSH session-start telemetry              | Elastic            |
+| 08:36:22.479       | Session-end telemetry                    | Elastic            |
+| 08:36:24.042       | `logged-in` telemetry                    | Elastic            |
+| 08:36:24.043       | Additional `ssh_login` telemetry         | Elastic            |
+| Post-login         | Controlled discovery commands executed   | Attacker terminal  |
+| Post-login         | Matching process telemetry not observed  | Elastic query      |
+| Session completion | SSH activity terminated                  | Endpoint / Elastic |
 
 ---
 
@@ -394,14 +436,14 @@ Valid credential identified
 ↓
 SSH connection
 ↓
-Authenticated socadmin session
+Authenticated socadmin access
 ```
 
 Evidence:
 
 ```text
-01-hydra-credential-discovery.png
-02-ssh-valid-account-access.png
+09-Screenshots/Attack/01-hydra-credential-discovery.png
+09-Screenshots/Attack/02-ssh-valid-account-access.png
 ```
 
 ### Endpoint Perspective
@@ -417,8 +459,8 @@ Session termination
 Evidence:
 
 ```text
-03-linux-raw-auth-log.png
-04-linux-ssh-journal.png
+09-Screenshots/Telemetry/01-linux-raw-auth-log.png
+09-Screenshots/Telemetry/02-linux-ssh-journal.png
 ```
 
 ### SIEM Perspective
@@ -426,24 +468,26 @@ Evidence:
 ```text
 authentication_failure
 ↓
+authenticated
+↓
 ssh_login
 ↓
 started-session
 ↓
 logged-in
 ↓
-session termination
+ended-session
 ```
 
 Evidence:
 
 ```text
-05-elastic-authentication-chain.png
-06-elastic-ssh-login-event.png
-07-elastic-raw-auth-message.png
-08-elastic-authentication-failure.png
-09-elastic-ssh-session-start.png
-10-elastic-ssh-session-end.png
+09-Screenshots/Telemetry/03-elastic-authentication-chain.png
+09-Screenshots/Telemetry/04-elastic-ssh-login-event.png
+09-Screenshots/Telemetry/05-elastic-raw-auth-message.png
+09-Screenshots/Telemetry/06-elastic-authentication-failure.png
+09-Screenshots/Telemetry/07-elastic-ssh-session-start.png
+09-Screenshots/Telemetry/08-elastic-ssh-session-end.png
 ```
 
 ---
@@ -454,11 +498,10 @@ The simulation successfully demonstrated:
 
 * Controlled SSH credential guessing
 * Discovery of a valid lab credential
-* Abuse of the valid `socadmin` account
+* Use of the valid `socadmin` account
 * SSH authentication from `192.168.1.10`
-* Authentication failure followed by successful authentication
-* SSH session establishment
-* SSH session termination
+* Authentication failure and successful authentication telemetry
+* SSH session-related telemetry
 * Endpoint authentication logging
 * Elastic SIEM visibility and event correlation
 
@@ -506,7 +549,7 @@ Raw evidence should remain separated from sanitized GitHub documentation.
 
 ## 19. Attack Phase Conclusion
 
-The Project 02 attack phase successfully demonstrated a controlled:
+The Project 02 attack phase demonstrated a controlled:
 
 **Credential Guessing → Valid Account → SSH Access**
 
@@ -519,11 +562,11 @@ Kali / Hydra
     ↓
 Valid credential identified
     ↓
-SSH authentication failure
+SSH authentication activity
     ↓
-Successful SSH login
+Successful socadmin authentication
     ↓
-socadmin session established
+SSH session telemetry
     ↓
 Endpoint authentication evidence
     ↓
@@ -531,9 +574,3 @@ Elastic SIEM correlation
     ↓
 Session termination
 ```
-
-The available Elastic telemetry provided strong authentication and session visibility. Post-login process telemetry was specifically searched for but was not observed, and this limitation is retained in the investigation rather than replaced with an unsupported claim.
-
-**Attack Phase Status: COMPLETE**
-
-
