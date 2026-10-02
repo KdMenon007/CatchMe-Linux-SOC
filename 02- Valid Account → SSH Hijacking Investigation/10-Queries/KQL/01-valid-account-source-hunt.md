@@ -49,4 +49,3 @@ Elastic events must be correlated with the Linux SSH journal and raw authenticat
 * **Endpoint:** `soc-linux`
 * **Attacker:** `192.168.1.10`
 * **Account:** `socadmin`
-
