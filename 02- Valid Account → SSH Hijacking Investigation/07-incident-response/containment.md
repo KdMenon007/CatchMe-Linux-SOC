@@ -1,209 +1,317 @@
-# Project 02 — Containment
+# Containment
 
-## Objective
+## 1. Objective
 
-Contain the observed SSH session associated with the Project 02 valid-account activity while preserving the active administrative investigation session.
+The containment phase was performed after the Project 02 investigation identified valid-account SSH activity involving the `socadmin` account on the Linux endpoint.
 
-The containment action was performed only within the controlled CatchMe laboratory environment.
+The objective was to reduce the available SSH attack surface while preserving controlled administrative access through SSH public-key authentication.
 
 ---
 
-## Incident Context
+## 2. Containment Scope
 
-The investigation identified SSH activity involving:
-
-| Field | Value |
+| Item | Value |
 |---|---|
-| Source | Kali attacker |
-| Source IP | `192.168.1.10` |
-| Target | `soc-linux` |
+| Target Host | `soc-linux` |
 | Target IP | `192.168.1.16` |
-| Account | `socadmin` |
+| Attacker Host | Kali |
+| Attacker IP | `192.168.1.10` |
+| Account Observed | `socadmin` |
 | Service | SSH |
-| Process | `sshd` |
-
-The primary confirmed successful authentication occurred at:
-
-```text
-2026-10-02 08:36:22.295 IST
-```
+| Port | TCP/22 |
+| Password Authentication Before Containment | Enabled |
+| Public-Key Authentication | Enabled |
+| Password Authentication After Containment | Disabled |
+| Public-Key Authentication After Containment | Enabled |
 
 ---
 
-## Pre-Containment State
+## 3. Pre-Containment State
 
-Before containment verification, the endpoint showed an SSH connection from the attacker system:
-
-```text
-192.168.1.16:22 ← 192.168.1.10:35992
-```
-
-Associated SSH process:
+The pre-containment SSH configuration showed:
 
 ```text
-PID 2006
-sshd: socadmin@pts/1
+loginGraceTime 120
+maxAuthTries 6
+permitRootLogin without-password
+pubkeyAuthentication yes
+passwordAuthentication yes
+x11Forwarding yes
+permitUserEnvironment no
 ```
 
-The endpoint also showed SSH sessions associated with the `socadmin` account.
+The `socadmin` account was a local account with sudo privileges.
 
-### Pre-Containment Evidence
+The SSH service was listening on:
 
 ```text
-09-Screenshots/Investigation/06-active-ssh-session-before-containment.png
+0.0.0.0:22
+[::]:22
 ```
 
-This screenshot documents the SSH session state before the containment action.
+The `/home/socadmin/.ssh` directory had restrictive permissions:
+
+```text
+drwx------ socadmin:socadmin
+```
+
+The `authorized_keys` file had:
+
+```text
+-rw------- socadmin:socadmin
+```
+
+UFW was initially inactive.
+
+Evidence:
+
+* `03-remediation-ssh-configuration-baseline.png`
+* `04-remediation-account-privileges-baseline.png`
+* `05-remediation-network-firewall-baseline.png`
 
 ---
 
-## Containment Action
+## 4. Containment Actions
 
-The older SSH session associated with the `pts/1` session was terminated.
+### 4.1 Disable SSH Password Authentication
 
-The active investigation session was intentionally preserved.
+SSH password authentication was disabled.
 
-The containment action was performed against the controlled laboratory environment only.
+The effective configuration was verified as:
+
+```text
+passwordauthentication no
+pubkeyauthentication yes
+```
+
+The SSH configuration was syntax-validated and the SSH service was reloaded.
+
+Evidence:
+
+* `07-remediation-password-authentication-disabled.png`
+* `08-remediation-ssh-reload-success.png`
 
 ---
 
-## Post-Containment Verification
+### 4.2 Validate Password Authentication Blocking
 
-After the containment action, the previous SSH connection:
+A controlled SSH connection from Kali attempted to use password authentication while public-key authentication was disabled.
+
+The connection returned:
 
 ```text
-192.168.1.10:35992
+Permission denied (publickey).
 ```
 
-was no longer present.
+This demonstrated that password-based SSH authentication was no longer accepted.
 
-The previous SSH process:
+Evidence:
+
+* `09-remediation-password-authentication-blocked.png`
+
+---
+
+### 4.3 Preserve and Validate SSH Public-Key Authentication
+
+An ED25519 SSH key was created for the controlled Project 02 validation.
+
+The public key was installed for the `socadmin` account.
+
+Key-based authentication was successfully validated:
 
 ```text
-PID 2006
-sshd: socadmin@pts/1
+KEY_AUTH_SUCCESS
+socadmin
+soc-linux
+2026-10-02 11:09:06 IST
 ```
 
-was also no longer present.
+This confirmed that disabling password authentication did not prevent the intended SSH administrative access.
 
-The remaining active SSH connection was:
+Evidence:
+
+* `06-remediation-ssh-key-authentication-success.png`
+* `10-remediation-key-authentication-verified.png`
+
+---
+
+### 4.4 Disable X11 Forwarding
+
+X11 forwarding was disabled.
+
+The effective configuration was verified as:
 
 ```text
-192.168.1.10:54248
-        ↓
+x11forwarding no
+```
+
+The SSH service was reloaded and the configuration was verified.
+
+Evidence:
+
+* `11-remediation-x11-forwarding-disabled.png`
+* `12-remediation-x11-forwarding-reload-verified.png`
+
+---
+
+### 4.5 Enable and Restrict the Host Firewall
+
+UFW was configured to deny incoming traffic by default and allow outgoing traffic.
+
+The SSH rule was restricted to the controlled lab subnet:
+
+```text
+22/tcp    ALLOW IN    192.168.1.0/24
+```
+
+UFW was then enabled.
+
+Final firewall state:
+
+```text
+Status: active
+Default: deny (incoming), allow (outgoing)
+```
+
+Evidence:
+
+* `13-remediation-ufw-ssh-rule-added.png`
+* `14-remediation-ufw-rule-verified.png`
+* `15-remediation-ufw-enabled.png`
+
+---
+
+## 5. Active SSH Session Validation
+
+Before containment, an active SSH connection from Kali to `soc-linux` was observed.
+
+The connection showed:
+
+```text
 192.168.1.16:22
+192.168.1.10
 ```
 
-Associated processes:
+The endpoint also showed an active `sshd` process associated with `socadmin`.
+
+Post-containment validation confirmed that the intended SSH access path remained functional.
+
+Evidence:
+
+* `01-active-ssh-session-before-containment.png`
+* `02-active-ssh-session-after-containment.png`
+
+---
+
+## 6. SSH Validation After Firewall Activation
+
+After enabling UFW, SSH public-key authentication was tested again.
+
+The controlled validation returned:
 
 ```text
-PID 2655
-sshd: socadmin [priv]
-
-PID 2731
-sshd: socadmin@pts/0
+FIREWALL_SSH_TEST_SUCCESS
+socadmin
+soc-linux
+2026-10-02 11:22:15 IST
 ```
 
-This represents the remaining active investigation session.
+This confirmed that the firewall rule allowed the intended SSH management path from the lab subnet.
 
-### Post-Containment Evidence
+Evidence:
+
+* `16-remediation-ssh-after-ufw-verified.png`
+
+---
+
+## 7. Final Containment State
+
+The final effective SSH configuration showed:
 
 ```text
-09-Screenshots/Investigation/07-active-ssh-session-after-containment.png
+passwordauthentication no
+pubkeyauthentication yes
+x11forwarding no
 ```
 
----
+The SSH service remained active.
 
-## Firewall State
-
-The endpoint firewall was checked during containment validation.
-
-Observed state:
+UFW was active with:
 
 ```text
-Status: inactive
+Default: deny (incoming)
+Default: allow (outgoing)
 ```
 
-No firewall rule was added as part of this containment action.
-
-Therefore, the project does **not** claim that the source IP was blocked at the network firewall.
-
----
-
-## Account State
-
-The `socadmin` account was not disabled during this laboratory containment action.
-
-No password rotation was performed as part of this stage.
-
-No SSH authorized-key modification was performed.
-
----
-
-## Containment Result
-
-| Containment Item                        | Result        |
-| --------------------------------------- | ------------- |
-| Previous SSH connection terminated      | Confirmed     |
-| Previous SSH process terminated         | Confirmed     |
-| Current investigation session preserved | Confirmed     |
-| Source IP firewall block                | Not performed |
-| UFW enabled                             | No            |
-| Account disabled                        | No            |
-| Password changed                        | No            |
-| Authorized keys modified                | No            |
-| Host isolated                           | No            |
-
----
-
-## Evidence Correlation
+The SSH firewall rule was:
 
 ```text
-Pre-Containment SSH Session
-        |
-        v
-192.168.1.10 → 192.168.1.16:22
-        |
-        v
-Identify SSH Process
-        |
-        v
-Terminate Previous Session
-        |
-        v
-Verify Process State
-        |
-        v
-Verify Network State
-        |
-        v
-Previous Connection Gone
-        |
-        v
-Investigation Session Preserved
+22/tcp    ALLOW IN    192.168.1.0/24
 ```
+
+Evidence:
+
+* `17-remediation-final-state.png`
 
 ---
 
-## Evidence Files
+## 8. Containment Effect
 
-```text
-09-Screenshots/Investigation/
-├── 06-active-ssh-session-before-containment.png
-└── 07-active-ssh-session-after-containment.png
-```
+The containment changes reduced the SSH attack surface by:
+
+1. Removing password-based SSH authentication.
+2. Retaining controlled public-key authentication.
+3. Disabling X11 forwarding.
+4. Enabling the host firewall.
+5. Restricting inbound SSH to the lab subnet.
+6. Verifying that intended SSH access remained functional.
+
+The `socadmin` account's existing sudo privileges were not changed during this containment phase.
 
 ---
 
-## Containment Conclusion
+## 9. Evidence Mapping
 
-The identified previous SSH session was successfully terminated in the controlled laboratory environment.
+| Screenshot                                            | Evidence                               |
+| ----------------------------------------------------- | -------------------------------------- |
+| `01-active-ssh-session-before-containment.png`        | Active SSH session before containment  |
+| `02-active-ssh-session-after-containment.png`         | SSH session state after containment    |
+| `03-remediation-ssh-configuration-baseline.png`       | Pre-containment SSH configuration      |
+| `04-remediation-account-privileges-baseline.png`      | `socadmin` privilege baseline          |
+| `05-remediation-network-firewall-baseline.png`        | Network/firewall baseline              |
+| `06-remediation-ssh-key-authentication-success.png`   | SSH public-key authentication setup    |
+| `07-remediation-password-authentication-disabled.png` | Password authentication disabled       |
+| `08-remediation-ssh-reload-success.png`               | SSH reload and validation              |
+| `09-remediation-password-authentication-blocked.png`  | Password authentication blocked        |
+| `10-remediation-key-authentication-verified.png`      | Public-key authentication verified     |
+| `11-remediation-x11-forwarding-disabled.png`          | X11 forwarding disabled                |
+| `12-remediation-x11-forwarding-reload-verified.png`   | X11 forwarding reload verified         |
+| `13-remediation-ufw-ssh-rule-added.png`               | SSH firewall rule added                |
+| `14-remediation-ufw-rule-verified.png`                | Firewall rule verified                 |
+| `15-remediation-ufw-enabled.png`                      | UFW enabled                            |
+| `16-remediation-ssh-after-ufw-verified.png`           | SSH verified after firewall activation |
+| `17-remediation-final-state.png`                      | Final containment state                |
 
-The active investigation connection was preserved to continue SOC validation.
+---
 
-No firewall block, account disablement, password rotation, host isolation, or SSH key modification was performed.
+## 10. Containment Conclusion
 
-The containment result is therefore limited to **termination of the identified SSH session and verification that the associated previous SSH process and network connection were no longer active**.
+Project 02 containment was completed on `soc-linux`.
 
-````
+The controlled response:
+
+* Disabled SSH password authentication.
+* Preserved SSH public-key authentication.
+* Verified password-based SSH access was blocked.
+* Verified public-key SSH access remained functional.
+* Disabled X11 forwarding.
+* Enabled UFW.
+* Restricted SSH access to `192.168.1.0/24`.
+* Verified SSH functionality after firewall activation.
+* Preserved evidence for the containment actions and validation steps.
+
+The endpoint remained operational and accessible through the intended controlled SSH management path.
+
+**Containment Status: COMPLETED**
+
 
