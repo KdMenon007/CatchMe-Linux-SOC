@@ -1,168 +1,35 @@
-# Project 02 — Telemetry Validation
-
-## Validation Status
-
-**Status:** VALIDATED  
-**Date:** 02 October 2026  
-**Timezone:** IST (Asia/Kolkata)  
-**Target:** `soc-linux`  
-**Target IP:** `192.168.1.16`  
-**Attacker IP:** `192.168.1.10`  
-**Account:** `socadmin`
-
----
+# Telemetry Validation
 
 ## Objective
 
-Validate that the controlled credential-acquisition and SSH activity generated endpoint authentication telemetry and that the relevant events were collected by Elastic.
+Validate that the controlled SSH valid-account activity from the Kali attacker was successfully captured by the Linux endpoint and ingested into Elastic SIEM.
+
+The validation focuses on:
+
+- Linux SSH authentication telemetry
+- Successful SSH authentication
+- Authentication failure telemetry associated with the test
+- SSH session creation and termination
+- Source IP correlation
+- Username correlation
+- Elastic Agent ingestion
+- Elastic SIEM event visibility
 
 ---
 
-## Endpoint SSH Telemetry
+## Lab Environment
 
-The SSH service journal recorded the following activity from attacker IP `192.168.1.10`.
+| Component | Hostname | IP Address | Role |
+|---|---|---|---|
+| Elastic SIEM | `elastic-siem` | `192.168.1.11` | Elasticsearch / Kibana / Fleet Server |
+| Linux Endpoint | `soc-linux` | `192.168.1.16` | SSH target / telemetry source |
+| Kali Attacker | `kiran` | `192.168.1.10` | Attack simulation |
 
-### Pre-authentication Connection
+All lab systems were synchronized to:
 
-```text
-08:36:21 IST
-Received disconnect from 192.168.1.10 port 40596 [preauth]
+`Asia/Kolkata (IST, UTC+05:30)`
 
-08:36:21 IST
-Disconnected from authenticating user socadmin 192.168.1.10 port 40596 [preauth]
-```
-This connection did not result in authentication.
-
-### Successful Authentication
-
-```text
-08:36:22 IST
-Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
-
-08:36:22 IST
-pam_unix(sshd:session): session opened for user socadmin(uid=1000)
-```
-
-This confirms that a valid password was successfully used to authenticate the `socadmin` account over SSH.
-
-### Session Closure
-
-```text
-08:36:22 IST
-pam_unix(sshd:session): session closed for user socadmin
-```
-
-The authenticated SSH session was subsequently terminated.
-
-### Additional Failed Authentication
-
-```text
-08:36:24 IST
-Failed password for socadmin from 192.168.1.10 port 40600 ssh2
-
-08:36:25 IST
-Connection closed by authenticating user socadmin 192.168.1.10 port 40600 [preauth]
-```
-
-This confirms another authentication attempt from the same attacker source after the successful authentication event.
-
----
-
-## `/var/log/auth.log` Correlation
-
-The endpoint authentication log recorded the successful SSH authentication using UTC timestamps.
-
-```text
-2026-10-02T03:06:22.295720+00:00
-Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
-
-2026-10-02T03:06:22.296579+00:00
-pam_unix(sshd:session): session opened for user socadmin(uid=1000)
-
-2026-10-02T03:06:22.480565+00:00
-pam_unix(sshd:session): session closed for user socadmin
-
-2026-10-02T03:06:24.043290+00:00
-Failed password for socadmin from 192.168.1.10 port 40600 ssh2
-```
-
-The UTC timestamps correspond to the same activity observed in the IST-based SSH journal.
-
----
-
-## Elastic Telemetry
-
-Elastic Discover successfully received SSH-related telemetry from `soc-linux`.
-
-Observed fields included:
-
-| Field          | Observed Value           |
-| -------------- | ------------------------ |
-| `host.name`    | `soc-linux`              |
-| `source.ip`    | `192.168.1.10`           |
-| `user.name`    | `socadmin`               |
-| `process.name` | `sshd`                   |
-| `event.action` | `ssh_login`              |
-| `event.action` | `authentication_failure` |
-| `event.action` | `started-session`        |
-| `event.action` | `ended-session`          |
-| `event.action` | `logged-in`              |
-
-### Primary Elastic SSH Login Event
-
-Observed in Elastic:
-
-```text
-Timestamp: 2026-10-02 08:36:22.295 IST
-event.action: ssh_login
-process.name: sshd
-host.name: soc-linux
-source.ip: 192.168.1.10
-user.name: socadmin
-```
-
-The expanded Elastic event also contained the message:
-
-```text
-Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
-```
-
----
-
-## Evidence Screenshots
-
-Attack/telemetry screenshots were captured from Elastic Discover.
-
-Relevant evidence includes:
-
-* SSH login telemetry
-* Authentication failure telemetry
-* Session-start telemetry
-* Session-end telemetry
-* Expanded SSH login event
-* Source IP and username correlation
-
-Screenshots are stored under:
-
-```text
-09-Screenshots/Attack/
-```
-
----
-
-## Important Evidence Classification
-
-The endpoint evidence demonstrates:
-
-1. An attacker connection originated from `192.168.1.10`.
-2. The `socadmin` account was targeted.
-3. A valid password was successfully accepted at `08:36:22 IST`.
-4. An SSH session was opened.
-5. The session was subsequently closed.
-6. Another failed authentication attempt occurred afterward.
-7. Elastic received corresponding SSH authentication and session telemetry.
-
-The successful password discovery itself should be attributed to the credential-acquisition stage and its raw attack output, not inferred solely from the SSH authentication event.
+Elastic stores event timestamps internally in UTC, while investigation timestamps are presented in IST.
 
 ---
 
@@ -172,35 +39,314 @@ The successful password discovery itself should be attributed to the credential-
 Kali Attacker
 192.168.1.10
       |
-      | SSH / credential attack activity
+      | SSH authentication activity
       v
+Linux Endpoint
 soc-linux
 192.168.1.16
       |
-      | sshd / auth.log / system authentication telemetry
+      | SSH / auth telemetry
       v
 Elastic Agent
       |
       v
-Elastic
+Fleet Server
+elastic-siem
+192.168.1.11
       |
       v
-Discover
+Elasticsearch
       |
       v
-SOC Investigation
+Kibana / Elastic Security
 ```
+
+---
+
+## Endpoint Telemetry Validation
+
+The Linux endpoint was verified to be generating SSH authentication telemetry.
+
+The SSH service was active and listening on TCP/22.
+
+The relevant Linux authentication sources included:
+
+* `systemd journal`
+* `/var/log/auth.log`
+
+Example validation command:
+
+```bash
+sudo journalctl -u ssh --since "2026-10-02 08:36:00" --until "2026-10-02 08:37:00" --no-pager
+```
+
+The validation captured SSH activity originating from:
+
+`192.168.1.10`
+
+Target account:
+
+`socadmin`
+
+---
+
+## Linux SSH Authentication Evidence
+
+The attack window contained the following SSH authentication events:
+
+```text
+08:36:21 IST
+SSH connection disconnected during pre-authentication
+
+08:36:22 IST
+Authentication failure for socadmin from 192.168.1.10
+
+08:36:22 IST
+Accepted password for socadmin from 192.168.1.10
+
+08:36:22 IST
+SSH session opened for socadmin
+
+08:36:22 IST
+SSH session closed for socadmin
+
+08:36:24 IST
+Failed password for socadmin from 192.168.1.10
+```
+
+The endpoint logs therefore demonstrated both failed and successful authentication activity from the controlled attacker IP.
+
+---
+
+## Elastic SIEM Validation
+
+Elastic Security successfully received SSH telemetry from `soc-linux`.
+
+The following KQL was used to locate the relevant events:
+
+```kql
+host.name : "soc-linux" and source.ip : "192.168.1.10" and user.name : "socadmin"
+```
+
+The query returned SSH-related telemetry associated with the controlled activity.
+
+---
+
+## SSH Process Telemetry
+
+The following query was used to identify SSH daemon activity:
+
+```kql
+host.name : "soc-linux" and process.name : "sshd"
+```
+
+The resulting events included SSH authentication and session-related activity.
+
+Observed event types included:
+
+* `authentication_failure`
+* `ssh_login`
+* `authenticated`
+* `was-authorized`
+* `acquired-credentials`
+* `started-session`
+* `ended-session`
+* `logged-in`
+* `logged-off`
+* `syscall`
+
+The exact event types depend on the Elastic integration and event generated by the underlying authentication activity.
+
+---
+
+## Successful SSH Login Event
+
+A successful SSH login event was observed at:
+
+`2026-10-02 08:36:22.295 IST`
+
+Relevant fields:
+
+| Field                 | Value          |
+| --------------------- | -------------- |
+| `event.action`        | `ssh_login`    |
+| `process.name`        | `sshd`         |
+| `host.name`           | `soc-linux`    |
+| `source.ip`           | `192.168.1.10` |
+| `source.port`         | `40598`        |
+| `user.name`           | `socadmin`     |
+| `agent.name`          | `soc-linux`    |
+| `data_stream.dataset` | `system.auth`  |
+
+The raw event message identified the authentication as:
+
+```text
+Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
+```
+
+This provides direct correlation between the attacker IP, target account, SSH service, and successful password authentication.
+
+---
+
+## Authentication Failure Validation
+
+An authentication failure was also observed at:
+
+`2026-10-02 08:36:22.292 IST`
+
+Relevant fields included:
+
+| Field          | Value                    |
+| -------------- | ------------------------ |
+| `event.action` | `authentication_failure` |
+| `process.name` | `sshd`                   |
+| `host.name`    | `soc-linux`              |
+| `source.ip`    | `192.168.1.10`           |
+| `user.name`    | `socadmin`               |
+
+This event demonstrates that the authentication sequence included failed authentication activity associated with the credential-testing phase.
+
+---
+
+## Authenticated Event Validation
+
+Elastic also recorded events with:
+
+```kql
+host.name : "soc-linux" and event.action : "authenticated"
+```
+
+These events were associated with the SSH authentication activity involving the `socadmin` account.
+
+The presence of `authenticated` telemetry provides an additional authentication-state signal for correlation during threat hunting.
+
+---
+
+## SSH Session Telemetry
+
+Elastic telemetry also showed SSH session-related events associated with the activity.
+
+Observed event types included:
+
+```text
+started-session
+ended-session
+logged-in
+logged-off
+```
+
+These events can be used during investigation to correlate authentication with session lifecycle activity.
+
+---
+
+## Source IP Correlation
+
+The controlled attacker address was:
+
+`192.168.1.10`
+
+The same source IP was observed in the Linux SSH logs and Elastic telemetry.
+
+This provides a direct correlation:
+
+```text
+Kali Attacker
+192.168.1.10
+      |
+      v
+SSH Authentication
+      |
+      v
+socadmin
+      |
+      v
+soc-linux
+192.168.1.16
+      |
+      v
+Elastic Agent
+      |
+      v
+Elastic SIEM
+```
+
+---
+
+## Telemetry Integrity
+
+The following conditions were successfully validated:
+
+| Validation                            | Result |
+| ------------------------------------- | ------ |
+| SSH service active                    | PASS   |
+| SSH listening on TCP/22               | PASS   |
+| Linux authentication logging          | PASS   |
+| `/var/log/auth.log` telemetry         | PASS   |
+| SSH journal telemetry                 | PASS   |
+| Elastic Agent connected               | PASS   |
+| Elastic ingestion                     | PASS   |
+| Source IP visible                     | PASS   |
+| Username visible                      | PASS   |
+| Successful SSH authentication visible | PASS   |
+| Authentication failure visible        | PASS   |
+| SSH session telemetry visible         | PASS   |
+
+---
+
+## Evidence Screenshots
+
+The telemetry evidence is represented by the following screenshots:
+
+```text
+09-Screenshots/Telemetry/
+├── 01-linux-raw-auth-log.png
+├── 02-linux-ssh-journal.png
+├── 03-elastic-authentication-chain.png
+├── 04-elastic-ssh-login-event.png
+├── 05-elastic-raw-auth-message.png
+├── 06-elastic-authentication-failure.png
+├── 07-elastic-ssh-session-start.png
+└── 08-elastic-ssh-session-end.png
+```
+
+The corresponding screenshots provide visual evidence of the endpoint-to-SIEM telemetry pipeline.
+
+---
+
+## Evidence Boundary
+
+The earlier SSH login performed during environment verification was treated as **pre-attack validation activity** and was excluded from the Project 02 attack timeline.
+
+Only telemetry associated with the controlled credential-acquisition and SSH activity was considered for this validation.
+
+No evidence was observed or claimed for:
+
+* SSH persistence
+* `authorized_keys` modification
+* privilege escalation
+* credential dumping
+* destructive activity
+* data exfiltration
+* malware execution
+
+unless separately demonstrated by later project evidence.
 
 ---
 
 ## Validation Conclusion
 
-The telemetry pipeline is functioning for Project 02.
+The Project 02 telemetry pipeline successfully captured the controlled SSH valid-account activity.
 
-The controlled attack activity generated observable SSH authentication and session events on `soc-linux`, and those events were successfully ingested into Elastic.
+The evidence demonstrated that:
 
-The evidence supports continued progression to the **Threat Hunting phase**.
+1. SSH authentication activity occurred against `soc-linux`.
+2. The attacker source IP `192.168.1.10` was visible.
+3. The targeted account `socadmin` was visible.
+4. Both failed and successful authentication telemetry was recorded.
+5. SSH session lifecycle telemetry was available.
+6. Elastic Agent successfully forwarded the endpoint telemetry to Elastic SIEM.
+7. The resulting events were searchable in Kibana using KQL.
 
-No claim of persistence, privilege escalation, credential theft beyond the controlled password-discovery stage, or host compromise is made from this telemetry alone.
+This establishes the telemetry foundation required for the next phase: **Threat Hunting**.
 
 
