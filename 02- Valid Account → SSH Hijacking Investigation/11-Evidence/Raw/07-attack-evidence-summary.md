@@ -14,13 +14,7 @@ Consolidated raw evidence summary for the Project 02 valid-account SSH activity.
 
 ## Affected Account
 
-`soladmin`
-
-## Corrected Affected Account
-
-The Project 02 evidence identifies the affected SSH account as:
-
-`soladmin`
+`socadmin`
 
 ## Attack Activity
 
@@ -41,6 +35,7 @@ The Linux SSH log recorded:
 ```text
 Accepted password for socadmin from 192.168.1.10 port 40598 ssh2
 ```
+
 Timestamp:
 
 **2026-10-02 08:36:22 IST**
@@ -131,4 +126,5 @@ The evidence does not demonstrate:
 This summary consolidates previously collected Project 02 evidence. It does not introduce additional attack events or outcomes.
 
 All conclusions are limited to activity demonstrated by the available Linux and Elastic telemetry.
+
 
