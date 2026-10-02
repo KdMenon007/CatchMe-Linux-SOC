@@ -527,7 +527,3 @@ SOC Investigation
 
 The environment baseline has been captured before the controlled attack.
 
-
-
-```
-```
