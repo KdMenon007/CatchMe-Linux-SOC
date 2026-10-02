@@ -1,4 +1,7 @@
 # CatchMe Linux SOC — Project 01
+
+![Project Banner](12-Assets/project-banner.png)
+
 ## SSH Brute Force → Detection & Investigation
 
 A real-time Linux SOC investigation demonstrating controlled SSH password-guessing, endpoint telemetry, KQL threat hunting, detection engineering, alert investigation, evidence correlation, MITRE ATT&CK mapping, Cyber Kill Chain analysis, and incident response documentation.
