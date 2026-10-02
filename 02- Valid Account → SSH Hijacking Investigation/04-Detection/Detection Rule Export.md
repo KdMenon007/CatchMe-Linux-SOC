@@ -1,261 +1,278 @@
-# Detection Rule Export
+# Detection Rule Export — Linux SSH Valid Account Activity
 
 ## Project
 
-**Project 02 — Valid Account → SSH Hijacking**
-
-## Rule Name
-
-`CatchMe - Linux SSH Valid Account Activity`
-
-## Purpose
-
-This document records the final Elastic detection-rule configuration used for Project 02.
-
-The rule is intended to identify SSH authentication activity that can be investigated for potential valid-account abuse.
+**Project:** 02 — Valid Account → SSH Hijacking  
+**Detection Platform:** Elastic Security  
+**Rule Type:** Query  
+**Query Language:** KQL
 
 ---
 
-## Detection Logic
+## Rule Identification
 
-The detection is based on SSH daemon activity on the monitored Linux endpoint.
+**Rule Name:**
 
-### Primary KQL
+`CatchMe - Linux SSH Valid Account Activity`
+
+**Rule Type:**
+
+`Query`
+
+**Query Language:**
+
+`KQL`
+
+**Description:**
+
+Detects SSH authentication and session activity involving the monitored Linux endpoint.
+
+---
+
+## Detection Query
 
 ```kql
 host.name : "soc-linux" and process.name : "sshd" and source.ip : *
 ```
 
-
-### Successful SSH Authentication Query
-
-```kql
-host.name : "soc-linux" and event.action : "ssh_login" and source.ip : *
-```
-
-### Authentication Failure Query
-
-```kql
-host.name : "soc-linux" and event.action : "authentication_failure" and source.ip : *
-```
-
----
-
-## Project Validation Query
-
-The controlled Project 02 activity can be isolated using:
-
-```kql
-host.name : "soc-linux" and source.ip : "192.168.1.10" and user.name : "socadmin"
-```
-
-This query is intended for controlled laboratory validation and investigation.
-
-The attacker IP should not be hard-coded into a production detection.
-
 ---
 
 ## Rule Configuration
 
-The following values must be recorded directly from the Elastic rule after implementation.
+| Configuration             | Observed Value |
+| ------------------------- | -------------- |
+| Rule Type                 | Query          |
+| Query Language            | KQL            |
+| Severity                  | Medium         |
+| Risk Score                | 47             |
+| Runs Every                | 1 minute       |
+| Additional Look-back Time | 1 minute       |
+| Max Alerts Per Run        | 100            |
+| Timeline Template         | None           |
+| Alert Suppression         | Not enabled    |
 
-| Configuration   | Value                                                                 |
-| --------------- | --------------------------------------------------------------------- |
-| Rule name       | `CatchMe - Linux SSH Valid Account Activity`                          |
-| Rule ID         | To be recorded from Elastic                                           |
-| Rule type       | To be recorded from Elastic                                           |
-| Query language  | KQL                                                                   |
-| Query           | `host.name : "soc-linux" and process.name : "sshd" and source.ip : *` |
-| Severity        | To be recorded from Elastic                                           |
-| Risk score      | To be recorded from Elastic                                           |
-| Schedule        | To be recorded from Elastic                                           |
-| Lookback        | To be recorded from Elastic                                           |
-| Rule status     | To be recorded from Elastic                                           |
-| Alert ID        | To be recorded from Elastic                                           |
-| Alert timestamp | To be recorded from Elastic                                           |
+---
+
+## Index Patterns
+
+The Elastic rule overview showed the following configured index patterns:
+
+```text
+apm-*-transaction*
+auditbeat-*
+endgame-*
+filebeat-*
+logs-*
+packetbeat-*
+traces-apm*
+winlogbeat-*
+*-elastic-cloud-logs-*
+```
+
+The detection query is evaluated against the configured Elastic Security data view/index patterns.
 
 ---
 
 ## Detection Fields
 
-The rule relies on fields observed in the Project 02 telemetry:
+The rule uses the following primary fields:
 
-```text
-host.name
-process.name
-source.ip
-user.name
-event.action
-source.port
-@timestamp
-message
-```
+| Field          | Purpose                           |
+| -------------- | --------------------------------- |
+| `host.name`    | Identifies the monitored endpoint |
+| `process.name` | Identifies the SSH daemon         |
+| `source.ip`    | Identifies the remote source      |
 
-These fields provide the primary investigation context.
+Additional fields observed in the generated alert include:
+
+| Field            | Observed Value              |
+| ---------------- | --------------------------- |
+| `source.port`    | `58958`                     |
+| `user.name`      | `socadmin`                  |
+| `event.action`   | `ssh_login`                 |
+| `event.category` | `authentication`, `session` |
+| `host.name`      | `soc-linux`                 |
+| `process.name`   | `sshd`                      |
+| `source.ip`      | `192.168.1.10`              |
 
 ---
 
-## Detection Workflow
+## Rule Execution
+
+The rule was enabled and executed successfully.
+
+Elastic displayed:
 
 ```text
-SSH Activity
-     |
-     v
-sshd Process
-     |
-     v
-Source IP
-     |
-     v
-User Account
-     |
-     v
-Authentication Event
-     |
-     v
-Elastic Detection Rule
-     |
-     v
-Alert
-     |
-     v
-SOC Investigation
+Last response: succeeded
+```
+
+The rule was configured to execute:
+
+```text
+Every: 1 minute
+Additional look-back: 1 minute
 ```
 
 ---
 
-## Validation
+## Detection Validation
 
-The rule must be validated using the controlled Project 02 attack.
+A fresh SSH activity was generated from the Kali attacker system after the rule was enabled.
 
-Validation sequence:
+### Source
 
-1. Confirm the rule is enabled.
-2. Execute the controlled SSH credential-testing activity.
-3. Confirm authentication telemetry reaches Elastic.
-4. Wait for the detection schedule.
-5. Open Elastic Security Alerts.
-6. Locate the Project 02 alert.
-7. Open the alert details.
-8. Verify the source IP.
-9. Verify the username.
-10. Verify the target host.
-11. Verify the timestamp.
-12. Correlate the alert with the endpoint SSH logs.
-13. Capture the final alert screenshot.
-14. Record the actual rule configuration.
+```text
+Hostname: kiran
+IP: 192.168.1.10
+```
+
+### Target
+
+```text
+Hostname: soc-linux
+IP: 192.168.1.16
+```
+
+### Account
+
+```text
+socadmin
+```
+
+The resulting SSH telemetry matched the configured KQL query.
 
 ---
 
-## Alert Evidence
+## Generated Alert
 
-The final evidence should contain:
+Elastic Security generated one alert for the fresh activity.
+
+### Observed Alert
+
+| Field          | Value                                        |
+| -------------- | -------------------------------------------- |
+| Rule           | `CatchMe - Linux SSH Valid Account Activity` |
+| Timestamp      | `Oct 2, 2026 @ 10:08:40.907`                 |
+| Status         | Open                                         |
+| Severity       | Medium                                       |
+| Risk Score     | 47                                           |
+| Event Action   | `ssh_login`                                  |
+| Event Category | `authentication`, `session`                  |
+| Host           | `soc-linux`                                  |
+| Process        | `sshd`                                       |
+| Source IP      | `192.168.1.10`                               |
+| Source Port    | `58958`                                      |
+| User           | `socadmin`                                   |
+
+---
+
+## Alert Reason
+
+Elastic recorded the alert as an authentication/session event involving:
 
 ```text
-Rule
- |
- +-- Rule configuration
- |
- +-- KQL
- |
- +-- Detection schedule
- |
- +-- Severity
- |
- +-- Risk score
- |
- +-- Alert
-      |
-      +-- Source IP
-      +-- Username
-      +-- Target host
-      +-- Timestamp
-      +-- Related SSH events
+Process: sshd
+Source: 192.168.1.10:58958
+User: socadmin
+Host: soc-linux
+```
+
+The alert was assigned:
+
+```text
+Severity: Medium
+Risk Score: 47
 ```
 
 ---
 
-## Evidence Integrity
+## Evidence Screenshots
 
-Rule metadata must be copied from the actual Elastic configuration.
-
-The following values must not be invented:
-
-* Rule ID
-* Alert ID
-* Alert timestamp
-* Severity
-* Risk score
-* Schedule
-* Lookback
-* Alert status
-
-If a value has not yet been verified in Elastic, it remains marked:
-
-`To be recorded from Elastic`
-
----
-
-## Production Tuning
-
-The Project 02 attacker address:
+### Rule Overview
 
 ```text
-192.168.1.10
+09-Screenshots/Detection/02-detection-rule-overview.png
 ```
 
-is a laboratory validation value.
-
-A production implementation should not depend exclusively on this IP.
-
-Production tuning can incorporate:
-
-* Approved SSH administration sources
-* Jump hosts
-* Management systems
-* Expected administrative accounts
-* Expected access periods
-* Known automation
-
----
-
-## False Positive Considerations
-
-Legitimate SSH administration can generate:
-
-* Successful authentication
-* Failed authentication
-* Session creation
-* Session termination
-
-Therefore, an SSH authentication event should be investigated using its surrounding context.
-
-Relevant investigation pivots include:
+### Alert Details
 
 ```text
-source.ip
-user.name
-host.name
-event.action
-@timestamp
+09-Screenshots/Detection/01-elastic-valid-account-alert.png
+```
+
+### Alert Generated
+
+```text
+09-Screenshots/Detection/03-detection-alert-generated.png
 ```
 
 ---
 
 ## Export Status
 
-This document represents the detection-rule export template and validation record.
+This document records the **deployed Elastic rule configuration** observed in the Elastic Security interface.
 
-Final Elastic-generated rule metadata should be added only after the actual detection rule has been created and validated.
+It is a configuration record and should **not** be interpreted as a literal exported Elastic rule JSON file.
+
+No JSON rule export is documented here because a JSON export file was not captured during this validation.
+
+---
+
+## Rule Reproduction
+
+The core detection can be reproduced with:
+
+```kql
+host.name : "soc-linux" and process.name : "sshd" and source.ip : *
+```
+
+Recommended configuration:
+
+```text
+Rule Type: Query
+Language: KQL
+Severity: Medium
+Risk Score: 47
+Runs Every: 1 minute
+Look-back: 1 minute
+Max Alerts Per Run: 100
+```
+
+---
+
+## Validation Result
+
+```text
+Rule Created: YES
+Rule Enabled: YES
+Rule Executed: YES
+Execution Status: Succeeded
+Matching Activity: YES
+Alert Generated: YES
+Observed Alerts: 1
+```
+
+---
+
+## Evidence Integrity
+
+The configuration and alert values in this document are based on the Elastic Security interface observed during the Project 02 validation.
+
+No unobserved alert fields or rule configuration values have been added.
+
+The generated alert should be correlated with the underlying Linux authentication logs and Elastic events during the investigation phase.
 
 ---
 
 ## Conclusion
 
-Project 02 has a defined Elastic detection strategy for suspicious SSH valid-account activity.
+The `CatchMe - Linux SSH Valid Account Activity` rule was successfully configured and validated in Elastic Security.
 
-The detection rule is designed to provide a repeatable starting point for identifying SSH activity and correlating authentication behavior.
+The deployed rule used:
 
-The next step is to validate the rule in Elastic and preserve the real alert evidence.
+```kql
+host.name : "soc-linux" and process.name : "sshd" and source.ip : *
+```
 
 
