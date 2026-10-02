@@ -1,67 +1,82 @@
 # Remediation
 
-## Project
+## 1. Objective
 
-**CatchMe Linux SOC — Project 02: Valid Account → SSH Hijacking**
+The remediation phase applied security hardening changes to `soc-linux` following the Project 02 valid-account SSH activity.
 
-## Remediation Objective
-
-The remediation phase was performed after investigation of valid-account SSH activity involving the `socadmin` account and attacker source `192.168.1.10`.
-
-The objective was to reduce SSH attack surface while preserving legitimate administrative access.
-
-The remediation was performed directly on:
-
-- **Linux Endpoint:** `soc-linux`
-- **IP:** `192.168.1.16`
-- **SSH Account:** `socadmin`
-- **Attacker/Lab Host:** `192.168.1.10`
-- **SSH Port:** `22/tcp`
+The objective was to reduce the SSH attack surface, preserve controlled administrative access, and verify that the security controls remained functional after implementation.
 
 ---
 
-## 1. Pre-Remediation Findings
+## 2. Remediation Scope
 
-The baseline showed the following SSH configuration:
-
-| Control | Pre-Remediation State |
-|---|---|
-| PasswordAuthentication | `yes` |
-| PubkeyAuthentication | `yes` |
-| PermitRootLogin | `without-password` |
-| MaxAuthTries | `6` |
-| LoginGraceTime | `120` |
-| X11Forwarding | `yes` |
-| PermitUserEnvironment | `no` |
-| UFW | `inactive` |
-| SSH listener | `0.0.0.0:22` and `[::]:22` |
-| `/home/socadmin/.ssh` | `0700` |
-| `authorized_keys` | Empty at baseline |
-| `socadmin` sudo access | `(ALL : ALL) ALL` |
-
-### Baseline Evidence
-
-- `09-Screenshots/Investigation/08-remediation-ssh-configuration-baseline.png`
-- `09-Screenshots/Investigation/09-remediation-account-privileges-baseline.png`
-- `09-Screenshots/Investigation/10-remediation-network-firewall-baseline.png`
+| Item | Before Remediation | After Remediation |
+|---|---|---|
+| SSH Password Authentication | Enabled | Disabled |
+| SSH Public-Key Authentication | Enabled | Enabled |
+| X11 Forwarding | Enabled | Disabled |
+| UFW | Inactive | Active |
+| Incoming Firewall Policy | Not enforced | Deny |
+| Outgoing Firewall Policy | Not enforced | Allow |
+| SSH Firewall Source | Unrestricted by UFW | `192.168.1.0/24` |
+| SSH Service | Active | Active |
+| SSH Port | TCP/22 | TCP/22 |
 
 ---
 
-# 2. SSH Key-Based Authentication
+## 3. SSH Configuration Remediation
 
-Before disabling password authentication, a dedicated Project 02 Ed25519 SSH key was created on Kali.
-
-The public key was installed for `socadmin` on `soc-linux`.
-
-The installation returned:
+A backup of the original SSH configuration was created before modifying the configuration:
 
 ```text
-Number of key(s) added: 1
+/etc/ssh/sshd_config.project02-pre-remediation.bak
 ```
 
-Key-based authentication was then independently tested with password authentication explicitly disabled on the client.
 
-Successful validation:
+Password authentication was disabled.
+
+The effective SSH configuration was verified as:
+
+```text
+passwordauthentication no
+pubkeyauthentication yes
+```
+
+The SSH configuration was syntax-validated and the SSH service was reloaded successfully.
+
+Evidence:
+
+* `03-remediation-ssh-configuration-baseline.png`
+* `07-remediation-password-authentication-disabled.png`
+* `08-remediation-ssh-reload-success.png`
+
+---
+
+## 4. Password Authentication Remediation Validation
+
+A controlled connection from Kali attempted password authentication while public-key authentication was disabled.
+
+The endpoint rejected password authentication and returned:
+
+```text
+Permission denied (publickey).
+```
+
+This confirmed that password-based SSH authentication was disabled at the effective SSH configuration level.
+
+Evidence:
+
+* `09-remediation-password-authentication-blocked.png`
+
+---
+
+## 5. Public-Key Authentication Validation
+
+Because password authentication was disabled, controlled SSH administrative access was validated through public-key authentication.
+
+The ED25519 key was installed for the `socadmin` account and successfully used for authentication.
+
+Validation output:
 
 ```text
 KEY_AUTH_SUCCESS
@@ -70,184 +85,45 @@ soc-linux
 2026-10-02 11:09:06 IST
 ```
 
-### Evidence
+This confirmed that the intended administrative access mechanism remained operational after disabling password authentication.
 
-`09-Screenshots/Investigation/11-remediation-ssh-key-authentication-success.png`
+Evidence:
 
----
-
-# 3. Disable SSH Password Authentication
-
-A backup of the original SSH configuration was created:
-
-```text
-/etc/ssh/sshd_config.project02-pre-remediation.bak
-```
-
-A Project 02 SSH hardening configuration was created:
-
-```text
-/etc/ssh/sshd_config.d/99-catchme-project02.conf
-```
-
-The effective SSH configuration initially remained:
-
-```text
-passwordauthentication yes
-```
-
-Investigation of the SSH configuration identified:
-
-```text
-/etc/ssh/sshd_config:12: Include /etc/ssh/sshd_config.d/*.conf
-/etc/ssh/sshd_config.d/50-cloud-init.conf:1:PasswordAuthentication yes
-/etc/ssh/sshd_config.d/99-catchme-project02.conf:1:PasswordAuthentication no
-```
-
-Because the earlier applicable setting was taking effect, `PasswordAuthentication no` was placed before the include statement in `/etc/ssh/sshd_config`.
-
-The configuration was then syntax-tested successfully.
-
-Effective configuration:
-
-```text
-passwordauthentication no
-```
-
-### Evidence
-
-`09-Screenshots/Investigation/12-remediation-password-authentication-disabled.png`
+* `06-remediation-ssh-key-authentication-success.png`
+* `10-remediation-key-authentication-verified.png`
 
 ---
 
-# 4. Reload SSH Service
+## 6. X11 Forwarding Remediation
 
-The SSH service was reloaded without terminating the existing administrative session.
+X11 forwarding was disabled to remove an unnecessary SSH feature from the controlled Linux endpoint.
 
-Validation returned:
-
-```text
-active
-pubkeyauthentication yes
-passwordauthentication no
-```
-
-This confirmed that:
-
-* SSH remained operational.
-* Public-key authentication remained enabled.
-* Password authentication was disabled.
-
-### Evidence
-
-`09-Screenshots/Investigation/13-remediation-ssh-reload-success.png`
-
----
-
-# 5. Validate Password Authentication Blocking
-
-From Kali, password authentication was explicitly requested while public-key authentication was disabled for the test.
-
-The server rejected the connection with:
-
-```text
-Permission denied (publickey).
-```
-
-This demonstrated that password authentication was no longer accepted and that public-key authentication was the available authentication mechanism.
-
-### Evidence
-
-`09-Screenshots/Investigation/14-remediation-password-authentication-blocked.png`
-
----
-
-# 6. Validate Key-Based Authentication After Hardening
-
-After password authentication was disabled, the dedicated Project 02 SSH key was tested again.
-
-The key-based authentication remained functional.
-
-This verified that SSH hardening did not remove the legitimate administrative access path.
-
-### Evidence
-
-`09-Screenshots/Investigation/15-remediation-key-authentication-verified.png`
-
----
-
-# 7. Disable X11 Forwarding
-
-The baseline showed:
-
-```text
-x11forwarding yes
-```
-
-X11 forwarding was not required for the Project 02 SSH workflow.
-
-The following SSH hardening setting was added:
-
-```text
-X11Forwarding no
-```
-
-The configuration passed `sshd -t` validation and the effective configuration became:
+The effective configuration was verified as:
 
 ```text
 x11forwarding no
 ```
 
-### Evidence
+The SSH service was reloaded and the configuration was verified after reload.
 
-`09-Screenshots/Investigation/16-remediation-x11-forwarding-disabled.png`
+Evidence:
 
----
-
-# 8. Reload SSH After X11 Hardening
-
-The SSH service was reloaded successfully.
-
-Validation returned:
-
-```text
-active
-x11forwarding no
-```
-
-### Evidence
-
-`09-Screenshots/Investigation/17-remediation-x11-forwarding-reload-verified.png`
+* `11-remediation-x11-forwarding-disabled.png`
+* `12-remediation-x11-forwarding-reload-verified.png`
 
 ---
 
-# 9. UFW Firewall Configuration
+## 7. Firewall Remediation
 
-The baseline showed:
+UFW was configured as the host firewall.
 
-```text
-Status: inactive
-```
-
-Before enabling UFW, an SSH allow rule was created for the isolated lab network:
+The SSH rule was restricted to the controlled laboratory subnet:
 
 ```text
-ufw allow from 192.168.1.0/24 to any port 22 proto tcp
+22/tcp    ALLOW IN    192.168.1.0/24
 ```
 
-The rule was verified before enabling the firewall.
-
-### Evidence
-
-`09-Screenshots/Investigation/18-remediation-ufw-ssh-rule-added.png`
-
-`09-Screenshots/Investigation/19-remediation-ufw-rule-verified.png`
-
----
-
-# 10. Enable UFW
-
-The firewall policy was configured as:
+The firewall default policies were configured as:
 
 ```text
 Default: deny (incoming)
@@ -256,31 +132,19 @@ Default: allow (outgoing)
 
 UFW was enabled successfully.
 
-The resulting SSH rule was:
+Evidence:
 
-```text
-22/tcp    ALLOW IN    192.168.1.0/24
-```
-
-UFW status became:
-
-```text
-Status: active
-```
-
-Logging was enabled at the low level.
-
-### Evidence
-
-`09-Screenshots/Investigation/20-remediation-ufw-enabled.png`
+* `13-remediation-ufw-ssh-rule-added.png`
+* `14-remediation-ufw-rule-verified.png`
+* `15-remediation-ufw-enabled.png`
 
 ---
 
-# 11. Validate SSH After Firewall Activation
+## 8. SSH Validation After Firewall Remediation
 
-After enabling UFW, SSH access using the dedicated Project 02 public key was tested from Kali.
+After enabling UFW, SSH public-key authentication was tested again from Kali.
 
-Validation returned:
+The controlled validation returned:
 
 ```text
 FIREWALL_SSH_TEST_SUCCESS
@@ -289,166 +153,110 @@ soc-linux
 2026-10-02 11:22:15 IST
 ```
 
-This confirmed that the firewall did not interrupt the legitimate SSH management path.
+This confirmed that the intended SSH management path remained available after firewall enforcement.
 
-### Evidence
+Evidence:
 
-`09-Screenshots/Investigation/21-remediation-ssh-after-ufw-verified.png`
-
----
-
-# 12. Final Remediation Verification
-
-The final endpoint state was checked after all remediation changes.
-
-Effective SSH configuration:
-
-```text
-logingracetime 120
-maxauthtries 6
-permitrootlogin without-password
-pubkeyauthentication yes
-passwordauthentication no
-x11forwarding no
-permituserenvironment no
-```
-
-SSH service:
-
-```text
-active
-```
-
-UFW:
-
-```text
-Status: active
-Default: deny (incoming), allow (outgoing)
-```
-
-SSH firewall rule:
-
-```text
-22/tcp    ALLOW IN    192.168.1.0/24
-```
-
-SSH remained bound to:
-
-```text
-0.0.0.0:22
-[::]:22
-```
-
-The `socadmin` SSH directory retained:
-
-```text
-drwx------ socadmin:socadmin /home/socadmin/.ssh
--rw------- socadmin:socadmin /home/socadmin/.ssh/authorized_keys
-```
-
-### Final Evidence
-
-`09-Screenshots/Investigation/22-remediation-final-state.png`
+* `16-remediation-ssh-after-ufw-verified.png`
 
 ---
 
-# 13. Remediation Summary
+## 9. Final SSH Security Configuration
 
-| Security Control              | Before              | After                   | Validation                         |
-| ----------------------------- | ------------------- | ----------------------- | ---------------------------------- |
-| SSH password authentication   | Enabled             | **Disabled**            | Password login rejected            |
-| SSH public-key authentication | Enabled             | **Enabled**             | Key login successful               |
-| X11 forwarding                | Enabled             | **Disabled**            | `x11forwarding no`                 |
-| UFW                           | Inactive            | **Active**              | Firewall status verified           |
-| Incoming firewall policy      | Not enforced        | **Deny**                | UFW verified                       |
-| SSH firewall access           | Unrestricted by UFW | **192.168.1.0/24 only** | Rule verified                      |
-| SSH service                   | Active              | **Active**              | Service verified                   |
-| SSH management access         | Password available  | **Key-based**           | Post-hardening SSH test successful |
+The final effective SSH configuration showed:
+
+```text
+loginGraceTime 120
+maxAuthTries 6
+permitRootLogin without-password
+pubkeyAuthentication yes
+passwordAuthentication no
+x11Forwarding no
+permitUserEnvironment no
+```
+
+The SSH service remained active.
+
+Evidence:
+
+* `17-remediation-final-state.png`
 
 ---
 
-# 14. Security Impact
+## 10. Remediation Validation
 
-The remediation reduced the SSH attack surface by:
+The remediation was validated through multiple independent checks:
 
-1. Removing password-based SSH authentication.
-2. Requiring the configured public-key authentication path.
-3. Disabling unnecessary X11 forwarding.
-4. Enabling host-based firewall enforcement.
-5. Restricting inbound SSH access to the controlled lab network.
-6. Preserving legitimate administrative access through the dedicated SSH key.
-
-The remediation did **not** demonstrate or claim that all possible SSH attack paths were eliminated.
-
----
-
-# 15. Important Remaining Configuration
-
-The following setting remained unchanged:
-
-```text
-permitrootlogin without-password
-```
-
-This was not modified during this remediation stage.
-
-The `socadmin` account also retains full sudo privileges:
-
-```text
-(ALL : ALL) ALL
-```
-
-These settings are documented as part of the final security state rather than being represented as remediation changes that were not actually performed.
+| Control                   | Validation                | Result                    |
+| ------------------------- | ------------------------- | ------------------------- |
+| Password authentication   | Password-only SSH attempt | Blocked                   |
+| Public-key authentication | ED25519 SSH connection    | Successful                |
+| SSH service               | `systemctl is-active ssh` | Active                    |
+| SSH configuration         | `sshd -T`                 | Expected settings applied |
+| X11 forwarding            | `sshd -T`                 | Disabled                  |
+| Firewall                  | `ufw status verbose`      | Active                    |
+| Firewall SSH rule         | UFW rule inspection       | `192.168.1.0/24` allowed  |
+| SSH after firewall        | Controlled SSH test       | Successful                |
 
 ---
 
-# 16. Evidence Handling
+## 11. Configuration Protection
 
-All remediation screenshots were captured from the actual lab environment during the remediation process.
-
-No fabricated configuration states or validation results were used.
-
-The remediation evidence is stored under:
+The original SSH configuration was preserved before modification:
 
 ```text
-09-Screenshots/Investigation/
+/etc/ssh/sshd_config.project02-pre-remediation.bak
 ```
 
-Relevant remediation artifacts include:
+The new SSH hardening configuration was applied through:
 
 ```text
-08-remediation-ssh-configuration-baseline.png
-09-remediation-account-privileges-baseline.png
-10-remediation-network-firewall-baseline.png
-11-remediation-ssh-key-authentication-success.png
-12-remediation-password-authentication-disabled.png
-13-remediation-ssh-reload-success.png
-14-remediation-password-authentication-blocked.png
-15-remediation-key-authentication-verified.png
-16-remediation-x11-forwarding-disabled.png
-17-remediation-x11-forwarding-reload-verified.png
-18-remediation-ufw-ssh-rule-added.png
-19-remediation-ufw-rule-verified.png
-20-remediation-ufw-enabled.png
-21-remediation-ssh-after-ufw-verified.png
-22-remediation-final-state.png
+/etc/ssh/sshd_config.d/99-catchme-project02.conf
 ```
+
+The configuration was syntax-validated before the SSH service was reloaded.
+
+This provides a controlled rollback reference for the lab environment.
 
 ---
 
-# 17. Remediation Conclusion
+## 12. Remediation Evidence
 
-Project 02 remediation successfully changed the SSH authentication model from password-based access to validated public-key authentication, disabled X11 forwarding, and enabled an inbound-deny firewall policy with SSH permitted only from the controlled `192.168.1.0/24` laboratory network.
+| Screenshot                                            | Evidence                               |
+| ----------------------------------------------------- | -------------------------------------- |
+| `03-remediation-ssh-configuration-baseline.png`       | Original SSH security configuration    |
+| `04-remediation-account-privileges-baseline.png`      | Account privilege baseline             |
+| `05-remediation-network-firewall-baseline.png`        | Original firewall/network state        |
+| `06-remediation-ssh-key-authentication-success.png`   | Public-key authentication setup        |
+| `07-remediation-password-authentication-disabled.png` | Password authentication disabled       |
+| `08-remediation-ssh-reload-success.png`               | SSH reload validation                  |
+| `09-remediation-password-authentication-blocked.png`  | Password authentication blocked        |
+| `10-remediation-key-authentication-verified.png`      | Public-key authentication verified     |
+| `11-remediation-x11-forwarding-disabled.png`          | X11 forwarding disabled                |
+| `12-remediation-x11-forwarding-reload-verified.png`   | X11 reload validation                  |
+| `13-remediation-ufw-ssh-rule-added.png`               | SSH firewall rule added                |
+| `14-remediation-ufw-rule-verified.png`                | Firewall rule verified                 |
+| `15-remediation-ufw-enabled.png`                      | UFW enabled                            |
+| `16-remediation-ssh-after-ufw-verified.png`           | SSH verified after firewall activation |
+| `17-remediation-final-state.png`                      | Final security state                   |
 
-Post-remediation testing confirmed that:
+---
 
-* Password authentication was rejected.
-* Public-key authentication remained functional.
-* SSH remained active.
-* X11 forwarding was disabled.
-* UFW was active.
-* SSH remained reachable from the authorized laboratory network.
+## 13. Remediation Outcome
 
-The endpoint therefore remained operational while the documented SSH attack surface was reduced.
+The remediation successfully changed the SSH security posture of `soc-linux`.
 
+The final validated state:
+
+* SSH password authentication disabled.
+* SSH public-key authentication retained.
+* X11 forwarding disabled.
+* UFW enabled.
+* Incoming traffic denied by default.
+* SSH permitted from the controlled `192.168.1.0/24` laboratory subnet.
+* SSH service remained operational.
+* Public-key SSH access remained functional.
+* Password-based SSH access was rejected.
+
+**Remediation Status: COMPLETED**
 
