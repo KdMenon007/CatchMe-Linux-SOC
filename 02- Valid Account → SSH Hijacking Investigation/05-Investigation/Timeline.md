@@ -1,5 +1,3 @@
-# 05-investigation/timeline.md
-
 # Project 02 — Investigation Timeline
 
 ## Timeline Overview
