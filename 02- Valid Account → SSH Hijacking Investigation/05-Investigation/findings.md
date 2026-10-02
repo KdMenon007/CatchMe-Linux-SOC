@@ -1,5 +1,3 @@
-# 05-investigation/findings.md
-
 # Project 02 — Investigation Findings
 
 ## Confirmed Findings
