@@ -1,0 +1,7 @@
+flowchart LR
+ K[Kali attacker<br/>192.168.1.10] -->|SSH lab traffic| L[soc-linux endpoint<br/>192.168.1.16]
+ L -->|telemetry / search| E[Elastic SIEM<br/>192.168.1.11]
+ G[Gateway<br/>192.168.1.1] --- N[Lab subnet<br/>192.168.1.0/24]
+ K --- N
+ L --- N
+ E --- N

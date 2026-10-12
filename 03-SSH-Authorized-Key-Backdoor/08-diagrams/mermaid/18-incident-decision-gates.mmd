@@ -1,0 +1,5 @@
+flowchart TD
+ A[Key fingerprint ownership unknown] --> B[Confirm with owner/operator]
+ B --> C{Authorization decision}
+ C -->|pending| D[Preserve state and active session]
+ C -->|unauthorized and approved| E[Plan controlled containment]
