@@ -209,7 +209,7 @@ Important: Two keys were later present in `authorized_keys`, including one with 
 
 Project 03 review
 
-0/9
+9/9
 
 Confirm host, user, time range and data view
 
