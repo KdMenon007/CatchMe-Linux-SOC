@@ -2,6 +2,8 @@
 
 **CatchMe | Linux Security Operations Center (SOC) Portfolio**
 
+![Project Banner](12-Assets/project-banner.png)
+
 A defensive lab case study investigating SSH authentication, post-access discovery, SSH authorized-key persistence, and possible public-key re-entry using Linux audit telemetry and Elastic SIEM.
 
 ![Project](https://img.shields.io/badge/Project-03-blue)
