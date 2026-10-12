@@ -1,0 +1,3 @@
+# Purpose: Find Auditd syscall events matching the previously recorded custom detection query.
+# This is a search query, not proof that the live detection rule generated an alert.
+host.name:"soc-linux" AND data_stream.dataset:"auditd.log" AND auditd.log.key:"ssh_authorized_keys" AND auditd.log.record_type:"SYSCALL" AND NOT event.action:"changed-audit-configuration"

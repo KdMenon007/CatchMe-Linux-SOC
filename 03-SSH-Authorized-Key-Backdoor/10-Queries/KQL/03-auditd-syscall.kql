@@ -1,0 +1,2 @@
+# Purpose: Inspect Auditd syscall records; a write syscall does not identify the target file.
+host.name:"soc-linux" AND data_stream.dataset:"auditd.log" AND auditd.log.syscall:*

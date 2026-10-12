@@ -1,0 +1,4 @@
+flowchart LR
+ A[Kali 192.168.1.10] -->|SSH| B[sshd on soc-linux]
+ B --> C[Authentication event: socadmin]
+ C --> D[Session lifecycle records]

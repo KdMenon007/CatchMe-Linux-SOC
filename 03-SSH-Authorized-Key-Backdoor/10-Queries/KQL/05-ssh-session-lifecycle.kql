@@ -1,0 +1,2 @@
+# Purpose: Review SSH session lifecycle for the target account and source.
+host.name:"soc-linux" AND user.name:"socadmin" AND source.ip:"192.168.1.10" AND process.executable:"/usr/sbin/sshd" AND event.action:("authenticated" OR "was-authorized" OR "acquired-credentials" OR "started-session" OR "ended-session")

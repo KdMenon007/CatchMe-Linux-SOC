@@ -1,0 +1,2 @@
+# Purpose: Find successful public-key SSH re-entry from the Kali lab host.
+host.name:"soc-linux" AND process.name:"sshd" AND source.ip:"192.168.1.10" AND system.auth.ssh.method:"publickey" AND event.outcome:"success"

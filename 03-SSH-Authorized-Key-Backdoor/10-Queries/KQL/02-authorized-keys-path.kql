@@ -1,0 +1,3 @@
+# Purpose: Search for an Auditd PATH record naming the authorized_keys file.
+# Historical result during review: no results in the searched window.
+host.name:"soc-linux" AND data_stream.dataset:"auditd.log" AND auditd.log.record_type:"PATH" AND auditd.log.name:"/home/socadmin/.ssh/authorized_keys"

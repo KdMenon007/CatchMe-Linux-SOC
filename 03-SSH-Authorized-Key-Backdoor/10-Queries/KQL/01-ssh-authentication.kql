@@ -1,0 +1,2 @@
+# Purpose: Hunt SSH authentication activity for the target host.
+host.name:"soc-linux" AND (event.action:"ssh_login" OR event.action:"authentication_failure" OR auditd.log.record_type:"USER_LOGIN")

@@ -1,0 +1,2 @@
+# Purpose: Review sudo-related events for the target host.
+host.name:"soc-linux" AND process.name:"sudo" AND event.action:(ran-command OR was-authorized OR started-session OR ended-session OR authenticated OR authentication_failure)
