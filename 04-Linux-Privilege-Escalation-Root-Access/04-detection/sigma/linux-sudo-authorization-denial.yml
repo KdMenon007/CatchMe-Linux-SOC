@@ -1,0 +1,25 @@
+title: Linux Sudo Authorization Denial
+id: 9c9e5bb5-08bb-4cbe-b1b2-04f5c4d3e601
+status: experimental
+description: >
+  Detects Linux authentication log messages indicating that a user was
+  not allowed to run sudo. Validate logsource and field mapping for the
+  target collection pipeline before production use.
+references:
+  - https://attack.mitre.org/techniques/T1548/003/
+author: CatchMe SOC Lab
+date: 2026-10-14
+tags:
+  - attack.privilege_escalation
+  - attack.t1548.003
+logsource:
+  product: linux
+  service: auth
+detection:
+  selection:
+    - message|contains: 'not allowed to run sudo'
+    - message|contains: 'command not allowed'
+  condition: selection
+falsepositives:
+  - Authorized administrators testing restricted commands
+level: low
