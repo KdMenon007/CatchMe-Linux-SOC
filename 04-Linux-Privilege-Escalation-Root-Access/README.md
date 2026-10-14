@@ -2,6 +2,8 @@
 
 > **CatchMe Linux SOC Portfolio** · Evidence-led Linux privilege-escalation investigation
 
+![Project Banner](12-Assets/project-banner.png)
+
 ## 1. Project Overview
 
 This project documents a controlled Linux privilege-escalation assessment against the `soc-linux` lab host and the corresponding Elastic SIEM investigation. It focuses on identifying risky privilege boundaries, validating relevant telemetry, recording evidence, and distinguishing confirmed behavior from baseline reconnaissance.
