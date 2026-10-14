@@ -1,0 +1,8 @@
+2026-10-13T10:24:40.066739+05:30 soc-linux sshd[2628]: Failed password for p04ssh from 192.168.1.10 port 57500 ssh2
+2026-10-13T10:26:08.676235+05:30 soc-linux sshd[2643]: Failed password for p04ssh from 192.168.1.10 port 53560 ssh2
+2026-10-13T10:26:19.222344+05:30 soc-linux sshd[2762]: Accepted password for p04ssh from 192.168.1.10 port 54742 ssh2
+2026-10-13T10:32:53.308380+05:30 soc-linux sudo:   p04ssh : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/p04ssh ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:34:04.141860+05:30 soc-linux sudo:   p04ssh : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/p04ssh ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:34:42.860674+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:46:58.259478+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep -E 'Failed password for p04ssh|Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:50:05.748522+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep -E 'Failed password for p04ssh|Accepted password for p04ssh' /var/log/auth.log

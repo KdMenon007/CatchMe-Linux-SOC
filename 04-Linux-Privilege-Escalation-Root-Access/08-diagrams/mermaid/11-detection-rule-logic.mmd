@@ -1,0 +1,7 @@
+flowchart TD
+  A[Linux authentication event] --> B{Sudo denial phrase present?}
+  B -->|Yes| C[Candidate authorization-denial event]
+  B -->|No| D[No match]
+  C --> E[Validate user, host, time, and command]
+  E --> F[Analyst disposition]
+

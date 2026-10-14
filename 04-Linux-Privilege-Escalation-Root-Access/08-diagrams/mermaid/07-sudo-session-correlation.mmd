@@ -1,0 +1,6 @@
+flowchart LR
+  A[User command attempt] --> B[Local sudo authorization]
+  B --> C[Authentication or authorization log]
+  C --> D[Elastic telemetry search]
+  D --> E[Compare user, host, command, and time]
+

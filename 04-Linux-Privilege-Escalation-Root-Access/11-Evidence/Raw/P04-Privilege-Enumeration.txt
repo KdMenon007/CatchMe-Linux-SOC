@@ -1,0 +1,65 @@
+========== SUID FILES ==========
+6755 root:root /usr/lib/xorg/Xorg.wrap
+4754 root:messagebus /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+4755 root:root /usr/lib/polkit-1/polkit-agent-helper-1
+4755 root:root /usr/lib/openssh/ssh-keysign
+4755 root:root /usr/bin/vmware-user-suid-wrapper
+4755 root:root /usr/bin/newgrp
+4755 root:root /usr/bin/pkexec
+4755 root:root /usr/bin/gpasswd
+4755 root:root /usr/bin/chsh
+4755 root:root /usr/bin/su
+4755 root:root /usr/bin/mount
+4755 root:root /usr/bin/umount
+4755 root:root /usr/bin/sudo
+4755 root:root /usr/bin/passwd
+4755 root:root /usr/bin/chfn
+4755 root:root /usr/bin/fusermount3
+4754 root:dip /usr/sbin/pppd
+
+========== SGID FILES ==========
+6755 root:root /usr/lib/xorg/Xorg.wrap
+2755 root:utmp /usr/lib/aarch64-linux-gnu/utempter/utempter
+2755 root:shadow /usr/bin/expiry
+2755 root:_ssh /usr/bin/ssh-agent
+2755 root:crontab /usr/bin/crontab
+2755 root:shadow /usr/bin/chage
+2755 root:mail /usr/libexec/camel-lock-helper-1.2
+2755 root:shadow /usr/sbin/pam_extrausers_chkpwd
+2755 root:shadow /usr/sbin/unix_chkpwd
+
+========== FILE CAPABILITIES ==========
+/usr/lib/snapd/snap-confine cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_setgid,cap_setuid,cap_sys_chroot,cap_sys_ptrace,cap_sys_admin,cap_sys_resource=p
+/usr/lib/aarch64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper cap_net_bind_service,cap_net_admin,cap_sys_nice=ep
+/usr/bin/ping cap_net_raw=ep
+/usr/bin/mtr-packet cap_net_raw=ep
+
+========== WRITABLE PATHS ==========
+Writable by p04ssh: /var/tmp
+
+========== CRON CONFIGURATION ==========
+drwxr-xr-x 2 root root    4096 Oct  3 11:36 /etc/cron.d
+drwxr-xr-x 2 root root    4096 Oct  3 11:36 /etc/cron.daily
+drwxr-xr-x 2 root root    4096 Feb 10  2026 /etc/cron.hourly
+drwxr-xr-x 2 root root    4096 Oct  3 11:36 /etc/cron.monthly
+-rw-r--r-- 1 root root    1136 Feb 10  2026 /etc/crontab
+drwxr-xr-x 2 root root    4096 Oct  3 11:36 /etc/cron.weekly
+drwxr-xr-x 2 root root    4096 Feb 10  2026 /etc/cron.yearly
+drwxr-xr-x 3 root root    4096 Feb 10  2026 /var/spool/cron
+drwx-wx--T 2 root crontab 4096 Feb 10  2026 /var/spool/cron/crontabs
+644 root:root /etc/cron.d/sysstat
+644 root:root /etc/cron.d/e2scrub_all
+644 root:root /etc/cron.d/.placeholder
+644 root:root /etc/cron.d/anacron
+755 root:root /etc/cron.daily/man-db
+755 root:root /etc/cron.daily/sysstat
+755 root:root /etc/cron.daily/apt-compat
+755 root:root /etc/cron.daily/logrotate
+644 root:root /etc/cron.daily/.placeholder
+755 root:root /etc/cron.daily/apport
+755 root:root /etc/cron.daily/dpkg
+755 root:root /etc/cron.daily/0anacron
+644 root:root /etc/cron.hourly/.placeholder
+755 root:root /etc/cron.weekly/man-db
+644 root:root /etc/cron.weekly/.placeholder
+755 root:root /etc/cron.weekly/0anacron

@@ -1,0 +1,5 @@
+Project: CatchMe P04
+Host: soc-linux
+Low-privilege user: p04ssh
+Administrator: socadmin
+Status: Preparing controlled escalation test

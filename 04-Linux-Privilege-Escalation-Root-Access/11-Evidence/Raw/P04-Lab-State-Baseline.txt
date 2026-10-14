@@ -1,0 +1,10 @@
+Host: soc-linux
+Administrator: socadmin
+Low-privilege account: p04ssh
+Low-privilege UID: 1001
+Sudo authorization: denied for p04ssh
+Lab directory: /opt/catchme-p04-lab
+Lab directory owner/mode: root:root 0755
+README owner/mode: root:root 0644
+Validation log owner/mode: root:root 0644
+Existing cron service: active

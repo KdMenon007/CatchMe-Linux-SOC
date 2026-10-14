@@ -1,0 +1,10 @@
+flowchart LR
+  A[Prepare] --> B[Detect and triage]
+  B --> C[Investigate]
+  C --> D{Evidence supports incident?}
+  D -->|Yes| E[Contain and remediate]
+  D -->|No or inconclusive| F[Document gaps]
+  E --> G[Validate recovery]
+  F --> H[Lessons learned]
+  G --> H
+

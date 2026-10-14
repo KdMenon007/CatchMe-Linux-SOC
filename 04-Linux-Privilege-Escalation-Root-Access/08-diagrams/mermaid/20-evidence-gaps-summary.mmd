@@ -1,0 +1,11 @@
+flowchart TD
+  A[Project evidence review] --> B[Confirmed observations]
+  A --> C[Baseline-only checks]
+  A --> D[Blocked techniques]
+  A --> E[Unverified claims]
+  B --> F[Final report]
+  C --> F
+  D --> F
+  E --> G[Remove or qualify claims]
+  G --> F
+

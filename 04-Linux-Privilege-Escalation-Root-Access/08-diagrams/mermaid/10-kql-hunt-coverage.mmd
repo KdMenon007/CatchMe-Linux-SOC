@@ -1,0 +1,10 @@
+flowchart TD
+  A[Select host and time range] --> B[Process events]
+  A --> C[SSH and authentication]
+  A --> D[Sudo authorization]
+  A --> E[Cron activity]
+  B --> F[Correlate findings]
+  C --> F
+  D --> F
+  E --> F
+

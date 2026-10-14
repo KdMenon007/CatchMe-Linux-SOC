@@ -1,0 +1,3 @@
+2026-10-13T10:24:40.066739+05:30 soc-linux sshd[2628]: Failed password for p04ssh from 192.168.1.10 port 57500 ssh2
+2026-10-13T10:26:08.676235+05:30 soc-linux sshd[2643]: Failed password for p04ssh from 192.168.1.10 port 53560 ssh2
+2026-10-13T10:26:19.222344+05:30 soc-linux sshd[2762]: Accepted password for p04ssh from 192.168.1.10 port 54742 ssh2

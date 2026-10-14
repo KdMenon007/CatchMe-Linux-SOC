@@ -1,0 +1,7 @@
+host.name:"soc-linux" and
+event.dataset:"system.auth" and
+process.name:"sudo" and
+(
+  message:"*user NOT in sudoers*" or
+  message:"*command not allowed*"
+)

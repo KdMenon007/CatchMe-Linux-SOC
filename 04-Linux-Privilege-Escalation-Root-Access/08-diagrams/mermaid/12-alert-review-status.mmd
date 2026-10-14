@@ -1,0 +1,6 @@
+flowchart TD
+  A[Query matching telemetry] --> B[Inspect raw event]
+  B --> C{Detection alert exists?}
+  C -->|Verified| D[Record alert identifier and status]
+  C -->|Not verified| E[Report telemetry only]
+

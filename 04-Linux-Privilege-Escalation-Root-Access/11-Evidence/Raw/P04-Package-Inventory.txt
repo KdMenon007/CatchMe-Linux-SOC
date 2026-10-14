@@ -1,0 +1,8 @@
+Target: soc-linux
+OS: Ubuntu 24.04.4 LTS
+Architecture: arm64 (aarch64)
+Kernel: 6.8.0-146-generic
+policykit-1: 124-2ubuntu1.24.04.4
+polkitd: 124-2ubuntu1.24.04.4
+snapd: 2.76.3+ubuntu24.04
+sudo: 1.9.15p5-3ubuntu5.24.04.4

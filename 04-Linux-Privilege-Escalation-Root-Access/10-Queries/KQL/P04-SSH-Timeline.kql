@@ -1,0 +1,1 @@
+host.name:"soc-linux" and system.auth.ssh.event:* and user.name:"p04ssh"

@@ -1,0 +1,8 @@
+flowchart TD
+  A[Initial access attempt] --> B[SSH authentication]
+  B --> C[Low-privilege session]
+  C --> D[Host and privilege enumeration]
+  D --> E{Privilege path available?}
+  E -->|Observed cron validation| F[Root-context execution evidence]
+  E -->|Sudo policy denies access| G[Blocked technique]
+

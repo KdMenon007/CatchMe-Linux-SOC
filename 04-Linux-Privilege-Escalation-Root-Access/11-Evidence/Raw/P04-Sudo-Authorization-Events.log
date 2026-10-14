@@ -1,0 +1,11 @@
+2026-10-13T09:56:15.603357+05:30 soc-linux sudo: socadmin : TTY=pts/0 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/sbin/adduser p04ssh
+2026-10-13T09:56:43.585818+05:30 soc-linux sudo: socadmin : TTY=pts/0 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/stat -c '%A %a %U:%G %n' /home/p04ssh
+2026-10-13T10:00:01.133003+05:30 soc-linux sudo: socadmin : TTY=pts/0 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/passwd p04ssh
+2026-10-13T10:25:18.100434+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep p04ssh /var/log/auth.log
+2026-10-13T10:32:53.308380+05:30 soc-linux sudo:   p04ssh : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/p04ssh ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:34:04.141860+05:30 soc-linux sudo:   p04ssh : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/p04ssh ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:34:42.860674+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep 'Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:46:58.259478+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep -E 'Failed password for p04ssh|Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:50:05.748522+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep -E 'Failed password for p04ssh|Accepted password for p04ssh' /var/log/auth.log
+2026-10-13T10:58:16.220468+05:30 soc-linux sudo:   p04ssh : command not allowed ; TTY=pts/2 ; PWD=/home/p04ssh ; USER=root ; COMMAND=list
+2026-10-13T11:42:31.307132+05:30 soc-linux sudo: socadmin : TTY=pts/1 ; PWD=/home/socadmin ; USER=root ; COMMAND=/usr/bin/grep -E 'p04ssh.*(not in the sudoers|a password is required)|sudo.*p04ssh' /var/log/auth.log

@@ -1,0 +1,8 @@
+flowchart TD
+  A[Collect files] --> B[Preserve original evidence]
+  B --> C[Generate SHA-256 manifest]
+  C --> D[Verify hashes]
+  D --> E{All entries match?}
+  E -->|Yes| F[Record integrity result]
+  E -->|No| G[Investigate changed or missing files]
+

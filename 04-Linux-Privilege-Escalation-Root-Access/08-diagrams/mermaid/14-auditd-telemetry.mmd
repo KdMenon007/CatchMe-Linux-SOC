@@ -1,0 +1,7 @@
+flowchart LR
+  A[Linux audit rules] --> B[Audit subsystem]
+  B --> C[Audit log events]
+  C --> D[Agent collection]
+  D --> E[Elasticsearch]
+  E --> F[Verify event presence and field values]
+

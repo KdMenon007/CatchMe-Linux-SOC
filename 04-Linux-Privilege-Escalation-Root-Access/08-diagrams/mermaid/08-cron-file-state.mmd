@@ -1,0 +1,8 @@
+flowchart TD
+  A[Inspect cron configuration] --> B[Controlled validation entry]
+  B --> C[Root-context execution observed]
+  C --> D[Remove temporary cron entry]
+  D --> E[Remove temporary validation script]
+  E --> F[Verify artifacts absent]
+  F --> G[Preserve validation log]
+

@@ -1,0 +1,9 @@
+flowchart TD
+  A[Review telemetry] --> B[Confirm source and timestamp]
+  B --> C[Correlate identity and process]
+  C --> D{Sufficient evidence?}
+  D -->|Yes| E[Document finding]
+  D -->|No| F[State evidence gap]
+  E --> G[Choose proportionate response]
+  F --> H[Collect more evidence if available]
+

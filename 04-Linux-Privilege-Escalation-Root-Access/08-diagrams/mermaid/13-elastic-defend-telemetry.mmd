@@ -1,0 +1,7 @@
+flowchart LR
+  A[Endpoint activity] --> B[Elastic Agent]
+  B --> C[Elastic Defend process telemetry]
+  C --> D[Elasticsearch]
+  D --> E[Investigate event fields]
+  E --> F[Check for duplicate telemetry sources]
+

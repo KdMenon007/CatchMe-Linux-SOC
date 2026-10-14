@@ -1,0 +1,112 @@
+========== CatchMe Project 04 ==========
+Phase: Post-login discovery
+2026-10-13T11:02:02+05:30
+
+========== USER AND GROUPS ==========
+p04ssh
+uid=1001(p04ssh) gid=1001(p04ssh) groups=1001(p04ssh),100(users)
+p04ssh users
+
+========== HOST INFORMATION ==========
+soc-linux
+ Static hostname: soc-linux
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: 80239a40a74f434d897c45562ca0ac1d
+         Boot ID: c3373fd2f5cb4daf8375b45b573bace3
+  Virtualization: vmware
+Operating System: Ubuntu 24.04.4 LTS
+          Kernel: Linux 6.8.0-146-generic
+    Architecture: arm64
+ Hardware Vendor: VMware, Inc.
+  Hardware Model: VMware20,1
+Firmware Version: VMW201.00V.25275966.BA64.2603102050
+   Firmware Date: Tue 2026-03-10
+    Firmware Age: 7month 4d
+Linux soc-linux 6.8.0-146-generic #146-Ubuntu SMP PREEMPT_DYNAMIC Thu Sep  3 16:20:48 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
+PRETTY_NAME="Ubuntu 24.04.4 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.4 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+
+========== CURRENT SESSION ==========
+socadmin pts/0        2026-10-13 09:34 (192.168.1.10)
+socadmin pts/1        2026-10-13 10:15 (192.168.1.10)
+p04ssh   pts/2        2026-10-13 10:26 (192.168.1.10)
+ 11:02:02 up  1:29,  3 users,  load average: 0.02, 0.05, 0.01
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU  WHAT
+p04ssh            192.168.1.10     10:26    1:29m  0.00s  0.05s sshd: p04ssh [priv]
+socadmin          192.168.1.10     10:15    1:29m  0.00s  0.02s sshd: socadmin [priv]
+socadmin          192.168.1.10     09:34    1:29m  0.00s  0.01s sshd: socadmin [priv]
+/home/p04ssh
+
+========== NETWORK INTERFACES ==========
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp2s0           UP             192.168.1.16/24 fe80::20c:29ff:feff:250e/64 
+
+========== ROUTING ==========
+default via 192.168.1.1 dev enp2s0 proto static metric 100 
+192.168.1.0/24 dev enp2s0 proto kernel scope link src 192.168.1.16 metric 100 
+
+========== LISTENING SERVICES ==========
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:36159      0.0.0.0:*          
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:631        0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:6789       0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:6791       0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:45081      0.0.0.0:*          
+LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*          
+LISTEN 0      4096            [::]:22            [::]:*          
+LISTEN 0      4096           [::1]:631           [::]:*          
+
+========== MOUNTED FILESYSTEMS ==========
+TARGET                          SOURCE                            FSTYPE              OPTIONS
+/                               /dev/mapper/ubuntu--vg-ubuntu--lv ext4                rw,relatime
+├─/sys                          sysfs                             sysfs               rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars   efivarfs                          efivarfs            rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security        securityfs                        securityfs          rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup              cgroup2                           cgroup2             rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot
+│ ├─/sys/fs/pstore              pstore                            pstore              rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf                 bpf                               bpf                 rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/debug           debugfs                           debugfs             rw,nosuid,nodev,noexec,relatime
+│ │ └─/sys/kernel/debug/tracing tracefs                           tracefs             rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/tracing         tracefs                           tracefs             rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections    fusectl                           fusectl             rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config          configfs                          configfs            rw,nosuid,nodev,noexec,relatime
+├─/proc                         proc                              proc                rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc    systemd-1                         autofs              rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=7194
+│   └─/proc/sys/fs/binfmt_misc  binfmt_misc                       binfmt_misc         rw,nosuid,nodev,noexec,relatime
+├─/dev                          udev                              devtmpfs            rw,nosuid,relatime,size=1941096k,nr_inodes=485274,mode=755,inode64
+│ ├─/dev/pts                    devpts                            devpts              rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000
+│ ├─/dev/shm                    tmpfs                             tmpfs               rw,nosuid,nodev,inode64
+│ ├─/dev/hugepages              hugetlbfs                         hugetlbfs           rw,nosuid,nodev,relatime,pagesize=2M
+│ └─/dev/mqueue                 mqueue                            mqueue              rw,nosuid,nodev,noexec,relatime
+├─/run                          tmpfs                             tmpfs               rw,nosuid,nodev,noexec,relatime,size=400572k,mode=755,inode64
+│ ├─/run/lock                   tmpfs                             tmpfs               rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+│ ├─/run/vmblock-fuse           vmware-vmblock                    fuse.vmware-vmblock rw,relatime,user_id=0,group_id=0,default_permissions,allow_other
+│ ├─/run/user/1000              tmpfs                             tmpfs               rw,nosuid,nodev,relatime,size=400568k,nr_inodes=100142,mode=700,uid=1000,gid=1000,inode64
+│ └─/run/user/1001              tmpfs                             tmpfs               rw,nosuid,nodev,relatime,size=400568k,nr_inodes=100142,mode=700,uid=1001,gid=1001,inode64
+├─/snap/bare/5                  /dev/loop0                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core24/2125             /dev/loop1                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firefox/8994            /dev/loop3                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gnome-46-2404/169       /dev/loop2                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gtk-common-themes/1535  /dev/loop4                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/mesa-2404/1836          /dev/loop5                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd/28255             /dev/loop6                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+├─/snap/thunderbird/1278        /dev/loop7                        squashfs            ro,nodev,relatime,errors=continue,threads=single
+└─/boot                         /dev/nvme0n1p2                    ext4                rw,relatime
+  └─/boot/efi                   /dev/nvme0n1p1                    vfat                rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+
+========== SUDO AUTHORIZATION ==========
+sudo: a password is required

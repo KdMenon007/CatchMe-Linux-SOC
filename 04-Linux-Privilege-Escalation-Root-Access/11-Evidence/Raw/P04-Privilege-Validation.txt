@@ -1,0 +1,14 @@
+2026-10-13T11:57:28+05:30
+soc-linux
+arm64
+aarch64
+--- package versions ---
+policykit-1 124-2ubuntu1.24.04.4
+polkitd 124-2ubuntu1.24.04.4
+snapd 2.76.3+ubuntu24.04
+sudo 1.9.15p5-3ubuntu5.24.04.4
+--- capabilities ---
+/usr/bin/mtr-packet cap_net_raw=ep
+/usr/bin/ping cap_net_raw=ep
+/usr/lib/aarch64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper cap_net_bind_service,cap_net_admin,cap_sys_nice=ep
+/usr/lib/snapd/snap-confine cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_setgid,cap_setuid,cap_sys_chroot,cap_sys_ptrace,cap_sys_admin,cap_sys_resource=p

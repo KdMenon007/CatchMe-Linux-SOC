@@ -1,0 +1,7 @@
+flowchart LR
+  A[Linux process activity] --> C[Elastic Agent]
+  B[Authentication and audit logs] --> C
+  C --> D[Elasticsearch]
+  D --> E[Discover and KQL investigation]
+  E --> F[Evidence capture]
+

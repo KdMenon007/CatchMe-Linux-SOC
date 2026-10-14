@@ -1,0 +1,6 @@
+flowchart LR
+  A[Kali attacker] -->|SSH lab activity| B[Ubuntu soc-linux]
+  B -->|Elastic Agent telemetry| C[Elastic SIEM]
+  D[Analyst] --> C
+  B --- E[Audit and authentication logs]
+

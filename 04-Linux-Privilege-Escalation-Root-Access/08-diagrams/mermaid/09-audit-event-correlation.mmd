@@ -1,0 +1,7 @@
+flowchart LR
+  A[Command execution] --> B[Linux telemetry]
+  B --> C[Elastic event]
+  C --> D[Inspect process identity and parent]
+  D --> E[Correlate with host log]
+  E --> F[Record supporting evidence]
+
